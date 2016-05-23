@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">Shadowroller</string>
+    <string name="action_settings">Settings</string>
+
+    <string name="name_test_simple">Simple Test</string>
+    <string name="name_test_extended">Extended Test</string>
+    <string name="name_probability">Probability</string>
+    <string name="name_saved_rolls">Saved Rolls</string>
+
+    <string name="section_format">Hello World from section: %1$d</string>
+</resources>
