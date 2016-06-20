@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="DiceRollerView">
+        <attr name="type" format="enum">
+            <enum name="simple" value="0"/>
+            <enum name="extended" value="1"/>
+            <enum name="probability" value="2"/>
+        </attr>
+    </declare-styleable>
+</resources>

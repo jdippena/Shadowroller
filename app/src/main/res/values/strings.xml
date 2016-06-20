@@ -7,8 +7,11 @@
     <string name="name_probability">Probability</string>
     <string name="name_saved_rolls">Saved Rolls</string>
 
-    <string name="section_format">Hello World from section: %1$d</string>
+    <string name="edge">Edge</string>
+    <string name="modifier_rule_of_six">Rule of Six</string>
+    <string name="modifier_push_the_limit">Push the Limit</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="text_minus_button" translatable="false">–</string>
+    <string name="text_plus_button" translatable="false">+</string>
+
 </resources>

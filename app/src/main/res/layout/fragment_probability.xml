@@ -2,8 +2,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
-    tools:context=".MainActivity">
+    tools:context=".ui.MainActivity">
     <GridLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -58,58 +59,11 @@
 
     </GridLayout>
 
-    <RelativeLayout
+    <com.imber.shadowroller.ui.DiceRollerView
         android:layout_width="match_parent"
-        android:layout_height="140dp"
-        android:layout_gravity="bottom">
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="100dp"
-            android:background="@android:color/white"
-            android:elevation="8dp"
-            android:layout_alignParentBottom="true"/>
-        <CheckBox
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Rule of Six"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="90dp"
-            android:elevation="8dp"
-            android:checked="true"/>
-        <TextView
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:background="@drawable/plus_minus_circle"
-            android:layout_marginTop="60dp"
-            android:layout_marginLeft="30dp"
-            android:layout_alignParentLeft="true"
-            android:elevation="8dp"
-            android:text="–"
-            android:gravity="center"
-            android:textSize="24sp"
-            android:textStyle="bold"/>
-        <TextView
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:background="@drawable/plus_minus_circle"
-            android:layout_marginTop="60dp"
-            android:layout_marginRight="30dp"
-            android:layout_alignParentRight="true"
-            android:elevation="8dp"
-            android:text="+"
-            android:gravity="center"
-            android:textSize="24sp"
-            android:textStyle="bold"/>
-        <TextView
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:background="@drawable/roll_circle"
-            android:elevation="12dp"
-            android:layout_centerHorizontal="true"
-            android:text="11"
-            android:gravity="center"
-            android:textSize="24sp"
-            android:textStyle="bold"/>
-    </RelativeLayout>
+        android:layout_height="@dimen/dice_roller_view_height"
+        android:id="@+id/dice_roller_view"
+        android:layout_gravity="bottom"
+        app:type="probability"/>
 
 </LinearLayout>

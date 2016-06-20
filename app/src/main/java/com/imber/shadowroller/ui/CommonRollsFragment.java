@@ -1,4 +1,4 @@
-package com.imber.shadowroller;
+package com.imber.shadowroller.ui;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -10,6 +10,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.TextView;
+
+import com.imber.shadowroller.R;
 
 public class CommonRollsFragment extends Fragment {
 
