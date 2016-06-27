@@ -1,12 +1,9 @@
 package com.imber.shadowroller.ui;
 
 import android.content.Context;
-import android.content.res.TypedArray;
-import android.graphics.Rect;
 import android.support.annotation.IdRes;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
-import android.view.TouchDelegate;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -87,15 +84,22 @@ public class DiceRollerView extends RelativeLayout {
             }
         });
 
-        final TypedArray a = context.getTheme()
-                .obtainStyledAttributes(attrs, R.styleable.DiceRollerView, defStyleAttr, 0);
-        int type;
-        try {
-            type = a.getInteger(R.styleable.DiceRollerView_type, Util.SIMPLE_TEST);
-        } finally {
-            a.recycle();
-        }
+        mMinusButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                decrementDice();
+            }
+        });
 
+        mPlusButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                incrementDice();
+            }
+        });
+    }
+
+    public void setType(@Util.TestTypes int type) {
         switch (type) {
             case Util.SIMPLE_TEST:
                 mBigRedButton.setOnClickListener(new OnClickListener() {
@@ -105,6 +109,8 @@ public class DiceRollerView extends RelativeLayout {
                         mSimpleTestDiceListener.onRollPerformed(result, mModifierStatus);
                     }
                 });
+                mEdgeCheckbox.setVisibility(VISIBLE);
+                mModifiers.setVisibility(VISIBLE);
                 break;
             case Util.EXTENDED_TEST:
                 mBigRedButton.setOnClickListener(new OnClickListener() {
@@ -125,33 +131,10 @@ public class DiceRollerView extends RelativeLayout {
                         mProbabilityDiceListener.onProbabilityQueried(probs, mModifierStatus);
                     }
                 });
+                mEdgeCheckbox.setVisibility(VISIBLE);
+                mModifiers.setVisibility(VISIBLE);
                 break;
         }
-
-        mMinusButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                decrementDice();
-            }
-        });
-
-        mPlusButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                incrementDice();
-            }
-        });
-
-        post(new Runnable() {
-            @Override
-            public void run() {
-                Rect hitRect = new Rect();
-                mBigRedButton.getHitRect(hitRect);
-                hitRect.top += 200;
-                TouchDelegate touchDelegate = new TouchDelegate(hitRect, mBigRedButton);
-                ((View) getParent()).setTouchDelegate(touchDelegate);
-            }
-        });
     }
 
     public void setSimpleTestDiceListener(Util.SimpleTestDiceListener listener) {

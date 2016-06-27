@@ -59,11 +59,4 @@
 
     </GridLayout>
 
-    <com.imber.shadowroller.ui.DiceRollerView
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/dice_roller_view_height"
-        android:id="@+id/dice_roller_view"
-        android:layout_gravity="bottom"
-        app:type="probability"/>
-
 </LinearLayout>

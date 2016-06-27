@@ -13,14 +13,31 @@ import android.view.MenuItem;
 
 import com.imber.shadowroller.R;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements ViewPager.OnPageChangeListener {
+    private final static String TAG = MainActivity.class.getCanonicalName();
+
     private SectionsPagerAdapter mSectionsPagerAdapter;
     private ViewPager mViewPager;
+
+    private CommonRollsFragment mCommonRollFragment;
+    private SimpleTestFragment mSimpleTestFragment;
+    private ProbabilityFragment mProbabilityFragment;
+
+    public DiceRollerView mDiceRollerView;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        mDiceRollerView = (DiceRollerView) findViewById(R.id.dice_roller_view);
+
+        mCommonRollFragment = CommonRollsFragment.newInstance();
+        mSimpleTestFragment = SimpleTestFragment.newInstance();
+        mProbabilityFragment = ProbabilityFragment.newInstance();
+        mDiceRollerView.setSimpleTestDiceListener(mSimpleTestFragment);
+        mDiceRollerView.setProbabilityDiceListener(mProbabilityFragment);
+
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -29,6 +46,8 @@ public class MainActivity extends AppCompatActivity {
         mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
         mViewPager.setCurrentItem(1);
+        mViewPager.addOnPageChangeListener(this);
+        onPageSelected(1);
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
@@ -51,6 +70,21 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+        if (position == 0) {
+            int width = mDiceRollerView.getWidth();
+            mDiceRollerView.setTranslationX((1 - positionOffset) * width);
+        }
+    }
+
+    @Override
+    public void onPageSelected(int position) {}
+
+    @Override
+    public void onPageScrollStateChanged(int state) {}
+
+
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
         public SectionsPagerAdapter(FragmentManager fm) {
@@ -61,11 +95,11 @@ public class MainActivity extends AppCompatActivity {
         public Fragment getItem(int position) {
             switch (position) {
                 case 0:
-                    return CommonRollsFragment.newInstance();
+                    return mCommonRollFragment;
                 case 1:
-                    return SimpleTestFragment.newInstance();
+                    return mSimpleTestFragment;
                 case 2:
-                    return ProbabilityFragment.newInstance();
+                    return mProbabilityFragment;
                 default:
                     return null;
             }

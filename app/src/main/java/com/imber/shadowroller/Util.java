@@ -7,6 +7,10 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 
 public class Util {
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef({SIMPLE_TEST, EXTENDED_TEST, PROBABILITY})
+    public @interface TestTypes{};
+
     public static final int SIMPLE_TEST = 0;
     public static final int EXTENDED_TEST = 1;
     public static final int PROBABILITY = 3;

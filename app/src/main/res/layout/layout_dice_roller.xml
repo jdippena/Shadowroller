@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:showIn="@layout/fragment_test_simple">
+    tools:showIn="@layout/activity_main">
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="@dimen/dice_roller_view_card_height"
         android:id="@+id/dice_roll_card"
         android:background="@android:color/white"
         android:elevation="8dp"
@@ -73,7 +73,7 @@
         android:layout_width="@dimen/dice_roller_view_roll_button_size"
         android:layout_height="@dimen/dice_roller_view_roll_button_size"
         android:id="@+id/big_red_button"
-        android:layout_marginTop="-40dp"
+        android:layout_marginTop="0dp"
         android:background="@drawable/roll_circle"
         android:elevation="9dp"
         android:layout_centerHorizontal="true"

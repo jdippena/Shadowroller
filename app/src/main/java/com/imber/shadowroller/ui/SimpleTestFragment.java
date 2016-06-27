@@ -18,7 +18,6 @@ public class SimpleTestFragment extends Fragment implements Util.SimpleTestDiceL
 
     private TextView mResultCircle;
     private TextView mResultOutput;
-    private DiceRollerView mDiceRollerView;
 
     public SimpleTestFragment() {}
 
@@ -32,8 +31,6 @@ public class SimpleTestFragment extends Fragment implements Util.SimpleTestDiceL
         View rootView = inflater.inflate(R.layout.fragment_test_simple, container, false);
         mResultCircle = (TextView) rootView.findViewById(R.id.test_simple_result_circle);
         mResultOutput = (TextView) rootView.findViewById(R.id.test_simple_result_output);
-        mDiceRollerView = (DiceRollerView) rootView.findViewById(R.id.dice_roller_view);
-        mDiceRollerView.setSimpleTestDiceListener(this);
         return rootView;
     }
 

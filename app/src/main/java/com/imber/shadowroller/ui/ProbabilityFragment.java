@@ -11,7 +11,6 @@ import com.imber.shadowroller.R;
 import com.imber.shadowroller.Util;
 
 public class ProbabilityFragment extends Fragment implements Util.ProbabilityDiceListener {
-    private DiceRollerView mDiceRollerView;
     public ProbabilityFragment() {}
 
     public static ProbabilityFragment newInstance() {
@@ -22,8 +21,6 @@ public class ProbabilityFragment extends Fragment implements Util.ProbabilityDic
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_probability, container, false);
-        mDiceRollerView = (DiceRollerView) rootView.findViewById(R.id.dice_roller_view);
-        mDiceRollerView.setProbabilityDiceListener(this);
         return rootView;
     }
 
