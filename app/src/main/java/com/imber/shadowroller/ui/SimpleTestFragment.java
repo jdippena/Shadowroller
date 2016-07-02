@@ -35,23 +35,14 @@ public class SimpleTestFragment extends Fragment implements Util.SimpleTestDiceL
     }
 
     @Override
-    public void onRollPerformed(ArrayList<int[]> output, @Util.TestModifiers int modifier) {
+    public void onRollPerformed(ArrayList<int[]> output, Util.TestModifier modifier) {
         int successes = Util.countSuccesses(output);
         mResultCircle.setText(String.valueOf(successes));
-        String display = diceOutputToString(output.get(0));
+        String display = Util.resultToOutput(output.get(0));
         for (int i = 1; i < output.size(); i++) {
-            display += "Re-roll: " + diceOutputToString(output.get(i));
+            display += "Re-roll: " + Util.resultToOutput(output.get(i));
         }
         mResultOutput.setText(display);
-    }
-
-    private String diceOutputToString(int[] diceOutput) {
-        String display = "";
-        for (int i = 0; i < diceOutput.length - 1; i++) {
-            display += String.valueOf(diceOutput[i]) + ", ";
-        }
-        display += String.valueOf(diceOutput[diceOutput.length-1]) + "\n";
-        return display;
     }
 }
 

@@ -25,7 +25,7 @@ public class ProbabilityFragment extends Fragment implements Util.ProbabilityDic
     }
 
     @Override
-    public void onProbabilityQueried(float[] probabilities, @Util.TestModifiers int modifier) {
+    public void onProbabilityQueried(float[] probabilities, Util.TestModifier modifier) {
 
     }
 }

@@ -32,9 +32,8 @@ public class DiceRollerView extends RelativeLayout {
     private Util.ProbabilityDiceListener mProbabilityDiceListener;
 
     private Random mRandom = new Random();
-    private int mDice = 10;
-    @Util.TestModifiers
-    private int mModifierStatus = Util.NONE;
+    private int mDice = 100;
+    private Util.TestModifier mModifierStatus = Util.TestModifier.NONE;
 
     public DiceRollerView(Context context) {
         super(context);
@@ -79,7 +78,7 @@ public class DiceRollerView extends RelativeLayout {
                 if (isChecked) {
                       setModifierStatus(mModifiers.getCheckedRadioButtonId());
                 } else {
-                    mModifierStatus = Util.NONE;
+                    mModifierStatus = Util.TestModifier.NONE;
                 }
             }
         });
@@ -99,9 +98,9 @@ public class DiceRollerView extends RelativeLayout {
         });
     }
 
-    public void setType(@Util.TestTypes int type) {
+    public void setType(Util.TestType type) {
         switch (type) {
-            case Util.SIMPLE_TEST:
+            case SIMPLE_TEST:
                 mBigRedButton.setOnClickListener(new OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -112,7 +111,7 @@ public class DiceRollerView extends RelativeLayout {
                 mEdgeCheckbox.setVisibility(VISIBLE);
                 mModifiers.setVisibility(VISIBLE);
                 break;
-            case Util.EXTENDED_TEST:
+            case EXTENDED_TEST:
                 mBigRedButton.setOnClickListener(new OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -123,7 +122,7 @@ public class DiceRollerView extends RelativeLayout {
                 mEdgeCheckbox.setVisibility(GONE);
                 mModifiers.setVisibility(GONE);
                 break;
-            case Util.PROBABILITY:
+            case PROBABILITY:
                 mBigRedButton.setOnClickListener(new OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -152,23 +151,23 @@ public class DiceRollerView extends RelativeLayout {
     private ArrayList<int[]> doSimpleRoll() {
         ArrayList<int[]> result = new ArrayList<>();
         switch (mModifierStatus) {
-            case Util.NONE:
-                result.add(doSingleRoll(mDice));
+            case NONE:
+                result.add(Util.doSingleRoll(mRandom, mDice));
                 break;
-            case Util.RULE_OF_SIX:
+            case RULE_OF_SIX:
                 int numSixes = mDice;
                 do {
-                    int[] roll = doSingleRoll(numSixes);
+                    int[] roll = Util.doSingleRoll(mRandom, numSixes);
                     result.add(roll);
                     numSixes = Util.countSixes(roll);
                 } while (numSixes > 0);
                 break;
-            case Util.PUSH_THE_LIMIT:
-                int[] roll = doSingleRoll(mDice);
+            case PUSH_THE_LIMIT:
+                int[] roll = Util.doSingleRoll(mRandom, mDice);
                 result.add(roll);
                 int successes = Util.countSuccesses(result);
                 if (successes != mDice) {
-                    int[] reRoll = doSingleRoll(mDice - successes);
+                    int[] reRoll = Util.doSingleRoll(mRandom, mDice - successes);
                     result.add(reRoll);
                 }
                 break;
@@ -177,9 +176,9 @@ public class DiceRollerView extends RelativeLayout {
     }
 
     private ArrayList<int[]> doExtendedRoll() {
-        ArrayList<int[]> result = new ArrayList<int[]>(mDice);
+        ArrayList<int[]> result = new ArrayList<>(mDice);
         for (int i = 0; i < mDice; i++) {
-            result.add(doSingleRoll(mDice - i));
+            result.add(Util.doSingleRoll(mRandom, mDice - i));
         }
         return result;
     }
@@ -187,14 +186,6 @@ public class DiceRollerView extends RelativeLayout {
     private float[] doProbabilityRoll() {
         // TODO: get things from ContentResolver
         return null;
-    }
-
-    private int[] doSingleRoll(int diceNumber) {
-        int[] result = new int[diceNumber];
-        for (int i = 0; i < diceNumber; i++) {
-            result[i] = mRandom.nextInt(6) + 1;
-        }
-        return result;
     }
 
     private void decrementDice() {
@@ -210,10 +201,10 @@ public class DiceRollerView extends RelativeLayout {
     private void setModifierStatus(@IdRes int checkedId) {
         switch (checkedId) {
             case R.id.radio_button_modifiers_rule_of_six:
-                mModifierStatus = Util.RULE_OF_SIX;
+                mModifierStatus = Util.TestModifier.RULE_OF_SIX;
                 break;
             case R.id.radio_button_modifiers_push_the_limit:
-                mModifierStatus = Util.PUSH_THE_LIMIT;
+                mModifierStatus = Util.TestModifier.PUSH_THE_LIMIT;
                 break;
         }
     }

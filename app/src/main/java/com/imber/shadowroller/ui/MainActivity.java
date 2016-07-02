@@ -12,6 +12,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.imber.shadowroller.R;
+import com.imber.shadowroller.Util;
 
 public class MainActivity extends AppCompatActivity implements ViewPager.OnPageChangeListener {
     private final static String TAG = MainActivity.class.getCanonicalName();
@@ -21,6 +22,7 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
 
     private CommonRollsFragment mCommonRollFragment;
     private SimpleTestFragment mSimpleTestFragment;
+    private ExtendedTestFragment mExtendedTestFragment;
     private ProbabilityFragment mProbabilityFragment;
 
     public DiceRollerView mDiceRollerView;
@@ -34,8 +36,10 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
 
         mCommonRollFragment = CommonRollsFragment.newInstance();
         mSimpleTestFragment = SimpleTestFragment.newInstance();
+        mExtendedTestFragment = ExtendedTestFragment.newInstance();
         mProbabilityFragment = ProbabilityFragment.newInstance();
         mDiceRollerView.setSimpleTestDiceListener(mSimpleTestFragment);
+        mDiceRollerView.setExtendedTestDiceListener(mExtendedTestFragment);
         mDiceRollerView.setProbabilityDiceListener(mProbabilityFragment);
 
 
@@ -79,7 +83,23 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
     }
 
     @Override
-    public void onPageSelected(int position) {}
+    public void onPageSelected(int position) {
+        Util.TestType type;
+        switch (position) {
+            case 1:
+                type = Util.TestType.SIMPLE_TEST;
+                break;
+            case 2:
+                type = Util.TestType.EXTENDED_TEST;
+                break;
+            case 3:
+                type = Util.TestType.PROBABILITY;
+                break;
+            default:
+                type = Util.TestType.SIMPLE_TEST;
+        }
+        mDiceRollerView.setType(type);
+    }
 
     @Override
     public void onPageScrollStateChanged(int state) {}
@@ -99,6 +119,8 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
                 case 1:
                     return mSimpleTestFragment;
                 case 2:
+                    return mExtendedTestFragment;
+                case 3:
                     return mProbabilityFragment;
                 default:
                     return null;
@@ -107,7 +129,7 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
 
         @Override
         public int getCount() {
-            return 3;
+            return 4;
         }
 
         @Override
@@ -118,6 +140,8 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
                 case 1:
                     return getString(R.string.name_test_simple);
                 case 2:
+                    return getString(R.string.name_test_extended);
+                case 3:
                     return getString(R.string.name_probability);
                 default:
                     return null;

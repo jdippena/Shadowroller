@@ -3,33 +3,27 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingBottom="@dimen/dice_roller_view_height"
+    android:paddingBottom="@dimen/dice_roller_view_card_height"
     android:orientation="vertical"
     android:gravity="center_horizontal"
     tools:context=".ui.MainActivity">
     <TextView
         android:layout_width="@dimen/result_circle_size"
         android:layout_height="@dimen/result_circle_size"
-        android:id="@+id/test_simple_result_circle"
+        android:id="@+id/test_extended_result_circle"
         android:layout_marginTop="16dp"
         android:background="@drawable/roll_result_circle"
         android:textSize="32sp"
         android:textStyle="bold"
         android:gravity="center"
         tools:text="4"/>
-    <ScrollView
+    <ListView
         android:layout_width="@dimen/result_output_width"
         android:layout_height="0dp"
+        android:id="@+id/test_extended_recycler_view"
+        android:divider="@null"
+        android:dividerHeight="0dp"
         android:layout_marginTop="16dp"
-        android:layout_weight="1">
-        <TextView
-            android:layout_width="@dimen/result_output_width"
-            android:layout_height="wrap_content"
-            android:id="@+id/test_simple_result_output"
-            android:layout_gravity="center_horizontal"
-            android:textSize="18sp"
-            android:gravity="center"
-            tools:text="6, 6, 5, 5, 4, 3, 3, 2, 2, 1, 1"/>
-    </ScrollView>
+        android:layout_weight="1"/>
 
 </LinearLayout>

@@ -1,39 +1,23 @@
 package com.imber.shadowroller;
 
-import android.support.annotation.IntDef;
-
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
+import java.util.Random;
 
 public class Util {
-    @Retention(RetentionPolicy.SOURCE)
-    @IntDef({SIMPLE_TEST, EXTENDED_TEST, PROBABILITY})
-    public @interface TestTypes{};
+    public enum TestType {
+        SIMPLE_TEST, EXTENDED_TEST, PROBABILITY
+    }
 
-    public static final int SIMPLE_TEST = 0;
-    public static final int EXTENDED_TEST = 1;
-    public static final int PROBABILITY = 3;
+    public enum TestModifier {
+        NONE, RULE_OF_SIX, PUSH_THE_LIMIT
+    }
 
-    @Retention(RetentionPolicy.SOURCE)
-    @IntDef({NONE, RULE_OF_SIX, PUSH_THE_LIMIT})
-    public @interface TestModifiers{};
-
-    public static final int NONE = 0;
-    public static final int RULE_OF_SIX = 1;
-    public static final int PUSH_THE_LIMIT = 2;
-
-    @Retention(RetentionPolicy.SOURCE)
-    @IntDef({NORMAL, CRITICAL_SUCCESS, GLITCH, CRITICAL_GLITCH})
-    public @interface RollStatus{};
-
-    public static final int NORMAL = 0;
-    public static final int CRITICAL_SUCCESS = 1;
-    public static final int GLITCH = 2;
-    public static final int CRITICAL_GLITCH = 3;
+    public enum RollStatus {
+        NORMAL, CRITICAL_SUCCESS, GLITCH, CRITICAL_GLITCH
+    }
 
     public interface SimpleTestDiceListener {
-        void onRollPerformed(ArrayList<int[]> output, @TestModifiers int modifier);
+        void onRollPerformed(ArrayList<int[]> output, TestModifier modifier);
     }
 
     public interface ExtendedTestDiceListener {
@@ -41,7 +25,15 @@ public class Util {
     }
 
     public interface ProbabilityDiceListener {
-        void onProbabilityQueried(float[] probabilities, @TestModifiers int modifier);
+        void onProbabilityQueried(float[] probabilities, TestModifier modifier);
+    }
+
+    public static int[] doSingleRoll(Random random, int diceNumber) {
+        int[] result = new int[diceNumber];
+        for (int i = 0; i < diceNumber; i++) {
+            result[i] = random.nextInt(6) + 1;
+        }
+        return result;
     }
 
     public static int countSixes(int[] diceResult) {
@@ -62,9 +54,25 @@ public class Util {
         return successes;
     }
 
-    @Util.RollStatus
-    public static int getRollStatus(int[] result) {
-        return Util.NORMAL;
+    public static int countSuccesses(int[] diceResult) {
+        int successes = 0;
+        for (int d : diceResult) {
+            if (d == 5 || d == 6) successes++;
+        }
+        return successes;
+    }
+
+    public static RollStatus getRollStatus(int[] result) {
+        return RollStatus.NORMAL;
+    }
+
+    public static String resultToOutput(int[] diceResult) {
+        String display = "";
+        for (int i = 0; i < diceResult.length - 1; i++) {
+            display += String.valueOf(diceResult[i]) + ", ";
+        }
+        display += String.valueOf(diceResult[diceResult.length-1]) + "\n";
+        return display;
     }
 
 }

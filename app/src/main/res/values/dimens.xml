@@ -11,5 +11,5 @@
     <dimen name="dice_roller_view_modifier_controls_margin_top">16dp</dimen>
 
     <dimen name="result_circle_size">120dp</dimen>
-    <dimen name="result_output_max_width">300dp</dimen>
+    <dimen name="result_output_width">300dp</dimen>
 </resources>
