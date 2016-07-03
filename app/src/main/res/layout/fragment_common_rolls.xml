@@ -15,6 +15,7 @@
     <android.support.design.widget.FloatingActionButton
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:id="@+id/fab_common_rolls_add"
         android:src="@drawable/ic_plus"
         app:fabSize="normal"
         app:layout_anchorGravity="bottom|right|end"

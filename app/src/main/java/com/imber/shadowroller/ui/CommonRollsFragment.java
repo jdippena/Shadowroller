@@ -2,7 +2,9 @@ package com.imber.shadowroller.ui;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -13,7 +15,7 @@ import android.widget.TextView;
 
 import com.imber.shadowroller.R;
 
-public class CommonRollsFragment extends Fragment {
+public class CommonRollsFragment extends Fragment implements AddCommonRollDialogFragment.AddDialogCallbacks {
 
     public CommonRollsFragment() {}
 
@@ -28,7 +30,31 @@ public class CommonRollsFragment extends Fragment {
         RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.common_rolls_recycler_view);
         recyclerView.setAdapter(new CommonRollsAdapter());
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        FloatingActionButton fab = (FloatingActionButton) rootView.findViewById(R.id.fab_common_rolls_add);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                revealAddDialog();
+            }
+        });
         return rootView;
+    }
+
+    private void revealAddDialog() {
+        FragmentManager fm = getActivity().getSupportFragmentManager();
+        AddCommonRollDialogFragment addDialog = new AddCommonRollDialogFragment();
+        addDialog.setCallback(this);
+        addDialog.show(fm, "addDialog");
+    }
+
+    @Override
+    public void onPositiveClicked(String name, int dice) {
+
+    }
+
+    @Override
+    public void onNegativeClicked() {
+
     }
 
     private class CommonRollsAdapter extends RecyclerView.Adapter<ViewHolder> {
@@ -68,7 +94,7 @@ public class CommonRollsFragment extends Fragment {
         }
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    private class ViewHolder extends RecyclerView.ViewHolder {
         public TextView nameTextView, diceTextView, resultTextView;
         public CheckBox edgeCheckBox;
 
@@ -81,4 +107,6 @@ public class CommonRollsFragment extends Fragment {
         }
 
     }
+
+
 }
