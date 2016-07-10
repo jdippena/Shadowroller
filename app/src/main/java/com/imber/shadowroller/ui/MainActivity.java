@@ -13,6 +13,7 @@ import android.view.MenuItem;
 
 import com.imber.shadowroller.R;
 import com.imber.shadowroller.Util;
+import com.imber.shadowroller.data.DbHelper;
 
 public class MainActivity extends AppCompatActivity implements ViewPager.OnPageChangeListener {
     private final static String TAG = MainActivity.class.getCanonicalName();
@@ -32,6 +33,7 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        DbHelper.initializeProbabilityTables(getApplicationContext());
         mDiceRollerView = (DiceRollerView) findViewById(R.id.dice_roller_view);
 
         mCommonRollFragment = CommonRollsFragment.newInstance();

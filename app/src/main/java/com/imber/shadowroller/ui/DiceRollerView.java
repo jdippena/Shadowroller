@@ -1,6 +1,8 @@
 package com.imber.shadowroller.ui;
 
 import android.content.Context;
+import android.database.Cursor;
+import android.net.Uri;
 import android.support.annotation.IdRes;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -32,7 +34,7 @@ public class DiceRollerView extends RelativeLayout {
     private Util.ProbabilityDiceListener mProbabilityDiceListener;
 
     private Random mRandom = new Random();
-    private int mDice = 100;
+    private int mDice = 10;
     private Util.TestModifier mModifierStatus = Util.TestModifier.NONE;
 
     public DiceRollerView(Context context) {
@@ -185,7 +187,18 @@ public class DiceRollerView extends RelativeLayout {
 
     private float[] doProbabilityRoll() {
         // TODO: get things from ContentResolver
-        return null;
+        Uri uri = Util.buildProbabilityUri(mModifierStatus, mDice, true);
+        Cursor cursor = getContext().getContentResolver().query(uri, null, null, null, null);
+        float[] probs = null;
+        if (cursor != null) {
+            probs = new float[cursor.getCount()];
+            for (int i = 0; i < cursor.getCount(); i++) {
+                cursor.moveToPosition(i);
+                probs[i] = (float) cursor.getDouble(0);
+            }
+            cursor.close();
+        }
+        return probs;
     }
 
     private void decrementDice() {

@@ -20,5 +20,12 @@
     <string name="text_minus_button" translatable="false">–</string>
     <string name="text_plus_button" translatable="false">+</string>
 
+    <string name="content_authority">com.imber.shadowroller.provider</string>
 
+    <string name="file_name_probability_normal">probability_normal.data</string>
+    <string name="file_name_probability_rule_of_six">probability_rule_of_six.data</string>
+    <string name="file_name_probability_push_the_limit">probability_push_the_limit.data</string>
+    <string name="file_name_probability_normal_cumulative">probability_normal_cumulative.data</string>
+    <string name="file_name_probability_rule_of_six_cumulative">probability_rule_of_six_cumulative.data</string>
+    <string name="file_name_probability_push_the_limit_cumulative">probability_push_the_limit_cumulative.data</string>
 </resources>

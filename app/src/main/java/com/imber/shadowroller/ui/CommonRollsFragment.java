@@ -1,5 +1,6 @@
 package com.imber.shadowroller.ui;
 
+import android.content.ContentValues;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -14,6 +15,7 @@ import android.widget.CheckBox;
 import android.widget.TextView;
 
 import com.imber.shadowroller.R;
+import com.imber.shadowroller.data.DbContract;
 
 public class CommonRollsFragment extends Fragment implements AddCommonRollDialogFragment.AddDialogCallbacks {
 
@@ -49,7 +51,11 @@ public class CommonRollsFragment extends Fragment implements AddCommonRollDialog
 
     @Override
     public void onPositiveClicked(String name, int dice) {
-
+        ContentValues values = new ContentValues(3);
+        values.put(DbContract.CommonRollsTable.NAME, name);
+        values.put(DbContract.CommonRollsTable.DICE, dice);
+        values.put(DbContract.CommonRollsTable.EDGE, Boolean.FALSE);
+        getContext().getContentResolver().insert(DbContract.CommonRollsTable.CONTENT_URI, values);
     }
 
     @Override
@@ -107,6 +113,4 @@ public class CommonRollsFragment extends Fragment implements AddCommonRollDialog
         }
 
     }
-
-
 }
