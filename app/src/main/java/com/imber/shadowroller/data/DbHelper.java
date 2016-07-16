@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.res.AssetManager;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
@@ -140,8 +141,21 @@ public class DbHelper extends SQLiteOpenHelper {
         return null;
     }
 
+    private static boolean probabilityDatabasesExist(SQLiteDatabase db) {
+        boolean exists;
+        try {
+            db = SQLiteDatabase.openDatabase(DbContract.PATH_NORMAL, null, SQLiteDatabase.OPEN_READONLY);
+            exists = true;
+            db.close();
+        } catch (SQLiteException e) {
+            exists = false;
+        }
+        return exists;
+    }
+
     public static void initializeProbabilityTables(final Context context) {
         DbHelper dbHelper = new DbHelper(context);
+        // TODO: for some reason this is necessary...
         dbHelper.onUpgrade(dbHelper.getWritableDatabase(), VERSION, VERSION);
         AssetManager assetManager = context.getAssets();
         for (Util.TestModifier modifier : Util.TestModifier.values()) {

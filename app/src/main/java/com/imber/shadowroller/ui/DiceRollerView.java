@@ -1,7 +1,6 @@
 package com.imber.shadowroller.ui;
 
 import android.content.Context;
-import android.database.Cursor;
 import android.net.Uri;
 import android.support.annotation.IdRes;
 import android.util.AttributeSet;
@@ -35,6 +34,8 @@ public class DiceRollerView extends RelativeLayout {
 
     private Random mRandom = new Random();
     private int mDice = 10;
+    private int mMaxDiceNum = 100;
+    private Util.TestType mTestType = Util.TestType.SIMPLE_TEST;
     private Util.TestModifier mModifierStatus = Util.TestModifier.NONE;
 
     public DiceRollerView(Context context) {
@@ -65,6 +66,8 @@ public class DiceRollerView extends RelativeLayout {
         }
 
         mBigRedButton.setText(String.valueOf(mDice));
+        mBigRedButton.setOnClickListener(new BigRedButtonClickListener());
+
         mModifiers.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
@@ -88,52 +91,36 @@ public class DiceRollerView extends RelativeLayout {
         mMinusButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                decrementDice();
+                setDice(mDice - 1);
             }
         });
 
         mPlusButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                incrementDice();
+                setDice(mDice + 1);
             }
         });
     }
 
     public void setType(Util.TestType type) {
-        switch (type) {
+        mTestType = type;
+        switch (mTestType) {
             case SIMPLE_TEST:
-                mBigRedButton.setOnClickListener(new OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        ArrayList<int[]> result = doSimpleRoll();
-                        mSimpleTestDiceListener.onRollPerformed(result, mModifierStatus);
-                    }
-                });
                 mEdgeCheckbox.setVisibility(VISIBLE);
                 mModifiers.setVisibility(VISIBLE);
+                mMaxDiceNum = 100;
                 break;
             case EXTENDED_TEST:
-                mBigRedButton.setOnClickListener(new OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        ArrayList<int[]> result = doExtendedRoll();
-                        mExtendedTestDiceListener.onExtendedRollPerformed(result);
-                    }
-                });
-                mEdgeCheckbox.setVisibility(GONE);
-                mModifiers.setVisibility(GONE);
+                mEdgeCheckbox.setVisibility(INVISIBLE);
+                mModifiers.setVisibility(INVISIBLE);
+                mMaxDiceNum = 100;
                 break;
             case PROBABILITY:
-                mBigRedButton.setOnClickListener(new OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        float[] probs = doProbabilityRoll();
-                        mProbabilityDiceListener.onProbabilityQueried(probs, mModifierStatus);
-                    }
-                });
                 mEdgeCheckbox.setVisibility(VISIBLE);
                 mModifiers.setVisibility(VISIBLE);
+                mMaxDiceNum = 50;
+                setDice(mDice);
                 break;
         }
     }
@@ -185,29 +172,13 @@ public class DiceRollerView extends RelativeLayout {
         return result;
     }
 
-    private float[] doProbabilityRoll() {
-        // TODO: get things from ContentResolver
-        Uri uri = Util.buildProbabilityUri(mModifierStatus, mDice, true);
-        Cursor cursor = getContext().getContentResolver().query(uri, null, null, null, null);
-        float[] probs = null;
-        if (cursor != null) {
-            probs = new float[cursor.getCount()];
-            for (int i = 0; i < cursor.getCount(); i++) {
-                cursor.moveToPosition(i);
-                probs[i] = (float) cursor.getDouble(0);
-            }
-            cursor.close();
-        }
-        return probs;
+    private Uri doProbabilityRoll() {
+        // TODO: add non-cumulative toggle
+        return Util.buildProbabilityUri(mModifierStatus, mDice, true);
     }
 
-    private void decrementDice() {
-        mDice = Math.max(1, mDice - 1);
-        mBigRedButton.setText(String.valueOf(mDice));
-    }
-
-    private void incrementDice() {
-        mDice++;
+    private void setDice(int dice) {
+        mDice = Math.min(Math.max(1, dice), mMaxDiceNum);
         mBigRedButton.setText(String.valueOf(mDice));
     }
 
@@ -219,6 +190,23 @@ public class DiceRollerView extends RelativeLayout {
             case R.id.radio_button_modifiers_push_the_limit:
                 mModifierStatus = Util.TestModifier.PUSH_THE_LIMIT;
                 break;
+        }
+    }
+
+    private class BigRedButtonClickListener implements View.OnClickListener {
+        @Override
+        public void onClick(View v) {
+            switch (mTestType) {
+                case SIMPLE_TEST:
+                    mSimpleTestDiceListener.onRollPerformed(doSimpleRoll(), mModifierStatus);
+                    break;
+                case EXTENDED_TEST:
+                    mExtendedTestDiceListener.onExtendedRollPerformed(doExtendedRoll());
+                    break;
+                case PROBABILITY:
+                    mProbabilityDiceListener.onProbabilityQueried(doProbabilityRoll());
+                    break;
+            }
         }
     }
 }

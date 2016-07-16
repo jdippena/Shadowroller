@@ -1,6 +1,9 @@
 package com.imber.shadowroller.ui;
 
+import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -28,12 +31,12 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
 
     public DiceRollerView mDiceRollerView;
 
+    private static final String PROBABILITY_TABLES_INITIALIZED_KEY = "prob_initialized";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        DbHelper.initializeProbabilityTables(getApplicationContext());
         mDiceRollerView = (DiceRollerView) findViewById(R.id.dice_roller_view);
 
         mCommonRollFragment = CommonRollsFragment.newInstance();
@@ -57,6 +60,11 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
+
+        if (!PreferenceManager.getDefaultSharedPreferences(this)
+                .getBoolean(PROBABILITY_TABLES_INITIALIZED_KEY, false)) {
+            new InitializeProbabilityTables().execute();
+        }
     }
 
 
@@ -148,6 +156,18 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
                 default:
                     return null;
             }
+        }
+    }
+
+    public class InitializeProbabilityTables extends AsyncTask<Void, Void, Void> {
+        @Override
+        protected Void doInBackground(Void... params) {
+            DbHelper.initializeProbabilityTables(getApplicationContext());
+            SharedPreferences.Editor editor =
+                    PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit();
+            editor.putBoolean(PROBABILITY_TABLES_INITIALIZED_KEY, true);
+            editor.apply();
+            return null;
         }
     }
 }

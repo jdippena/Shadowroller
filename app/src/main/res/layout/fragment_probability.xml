@@ -1,55 +1,18 @@
-<GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:columnCount="3"
     android:paddingBottom="@dimen/dice_roller_view_height"
     tools:context=".ui.MainActivity">
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_column="0"
-        android:layout_columnWeight="2"
-        android:layout_margin="8dp"
-        android:text="Hits"
-        android:textAppearance="@android:style/TextAppearance.DeviceDefault.WindowTitle"
-        android:textSize="18sp"
-        android:gravity="center"/>
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_column="1"
-        android:layout_columnWeight="1"
-        android:layout_margin="8dp"
-        android:text="Probability"
-        android:textAppearance="@android:style/TextAppearance.DeviceDefault.WindowTitle"
-        android:textSize="18sp"
-        android:gravity="center"/>
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_column="0"
-        android:layout_columnWeight="2"
-        android:text="1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n11\n12"
-        android:textSize="16sp"
-        android:gravity="center"/>
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_column="1"
-        android:layout_columnWeight="1"
-        android:text="98.8%\n93.5%\n81.5%\n63.9%\n44.6%\n27.7%\n15.4%\n7.8%\n3.6%\n1.5%\n0.5%\n0.2%\n"
-        android:textSize="16sp"
-        android:gravity="center"/>
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_column="2"
-        android:layout_columnWeight="1"
-        android:text="placehr"
-        android:textSize="16sp"
-        android:gravity="center"
-        android:visibility="invisible"/>
+    <android.support.v7.widget.RecyclerView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/probability_recycler_view"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
 
-</GridLayout>
+</android.support.design.widget.CoordinatorLayout>

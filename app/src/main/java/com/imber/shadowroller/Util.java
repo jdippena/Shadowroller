@@ -32,7 +32,7 @@ public class Util {
     }
 
     public interface ProbabilityDiceListener {
-        void onProbabilityQueried(float[] probabilities, TestModifier modifier);
+        void onProbabilityQueried(Uri uri);
     }
 
     public static int[] doSingleRoll(Random random, int diceNumber) {
@@ -78,7 +78,7 @@ public class Util {
         for (int i = 0; i < diceResult.length - 1; i++) {
             display += String.valueOf(diceResult[i]) + ", ";
         }
-        display += String.valueOf(diceResult[diceResult.length-1]) + "\n";
+        display += String.valueOf(diceResult[diceResult.length - 1]) + "\n";
         return display;
     }
 

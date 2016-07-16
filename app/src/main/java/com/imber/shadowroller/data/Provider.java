@@ -103,27 +103,21 @@ public class Provider extends ContentProvider {
                 cursor = db.query(DbContract.CommonRollsTable.TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);
                 break;
             case PROBABILITY_NORMAL_WITH_DICE:
-                projection = new String[] {DbContract.getColumnNameFromDiceNumber(DbContract.getDiceNumberFromUri(uri))};
                 cursor = db.query(DbContract.NormalProbabilityTable.TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);
                 break;
             case PROBABILITY_RULE_OF_SIX_WITH_DICE:
-                projection = new String[] {DbContract.getColumnNameFromDiceNumber(DbContract.getDiceNumberFromUri(uri))};
                 cursor = db.query(DbContract.RuleOfSixProbabilityTable.TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);
                 break;
             case PROBABILITY_PUSH_THE_LIMIT_WITH_DICE:
-                projection = new String[] {DbContract.getColumnNameFromDiceNumber(DbContract.getDiceNumberFromUri(uri))};
                 cursor = db.query(DbContract.PushTheLimitProbabilityTable.TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);
                 break;
             case PROBABILITY_NORMAL_CUMULATIVE_WITH_DICE:
-                projection = new String[] {DbContract.getColumnNameFromDiceNumber(DbContract.getDiceNumberFromUri(uri))};
                 cursor = db.query(DbContract.NormalCumulativeProbabilityTable.TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);
                 break;
             case PROBABILITY_RULE_OF_SIX_CUMULATIVE_WITH_DICE:
-                projection = new String[] {DbContract.getColumnNameFromDiceNumber(DbContract.getDiceNumberFromUri(uri))};
                 cursor = db.query(DbContract.RuleOfSixCumulativeProbabilityTable.TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);
                 break;
             case PROBABILITY_PUSH_THE_LIMIT_CUMULATIVE_WITH_DICE:
-                projection = new String[] {DbContract.getColumnNameFromDiceNumber(DbContract.getDiceNumberFromUri(uri))};
                 cursor = db.query(DbContract.PushTheLimitCumulativeProbabilityTable.TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);
                 break;
             default:
