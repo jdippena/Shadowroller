@@ -252,7 +252,10 @@ public class CommonRollsFragment extends Fragment
                 @Override
                 public void onClick(View v) {
                     int dice = Integer.valueOf(diceTextView.getText().toString());
-                    int successes = Util.countSuccesses(Util.doSimpleRoll(mRandom, dice, Util.TestModifier.NONE));
+                    ArrayList<int[]> output = Util.doSimpleRoll(mRandom, dice, Util.TestModifier.NONE);
+                    int successes = Util.countSuccesses(output);
+                    resultTextView.setBackgroundResource(
+                            Util.getResultCircleIdFromRollStatus(Util.getRollStatus(output.get(0))));
                     resultTextView.setText(String.valueOf(successes));
                 }
             });

@@ -18,6 +18,7 @@ public class SimpleTestFragment extends Fragment implements Util.SimpleTestDiceL
 
     private TextView mResultCircle;
     private TextView mResultOutput;
+    private TextView mRollStatus;
 
     public SimpleTestFragment() {}
 
@@ -31,13 +32,24 @@ public class SimpleTestFragment extends Fragment implements Util.SimpleTestDiceL
         View rootView = inflater.inflate(R.layout.fragment_test_simple, container, false);
         mResultCircle = (TextView) rootView.findViewById(R.id.test_simple_result_circle);
         mResultOutput = (TextView) rootView.findViewById(R.id.test_simple_result_output);
+        mRollStatus = (TextView) rootView.findViewById(R.id.test_simple_roll_status);
         return rootView;
     }
 
     @Override
     public void onRollPerformed(ArrayList<int[]> output, Util.TestModifier modifier) {
         int successes = Util.countSuccesses(output);
+        Util.RollStatus status = Util.getRollStatus(output.get(0));
+        mResultCircle.setBackgroundResource(
+                Util.getResultCircleIdFromRollStatus(status));
         mResultCircle.setText(String.valueOf(successes));
+        if (status != Util.RollStatus.NORMAL) {
+            mRollStatus.setTextColor(Util.getColorFromRollStatus(getResources(), status));
+            mRollStatus.setText(Util.getNameFromRollStatus(getResources(), status));
+            mRollStatus.setVisibility(View.VISIBLE);
+        } else {
+            mRollStatus.setVisibility(View.GONE);
+        }
         String display = Util.resultToOutput(output.get(0));
         for (int i = 1; i < output.size(); i++) {
             display += "Re-roll: " + Util.resultToOutput(output.get(i));

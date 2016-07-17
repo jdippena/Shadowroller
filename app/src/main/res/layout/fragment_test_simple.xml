@@ -17,6 +17,18 @@
         android:textStyle="bold"
         android:gravity="center"
         tools:text="4"/>
+    <TextView
+        android:layout_width="@dimen/result_output_width"
+        android:layout_height="wrap_content"
+        android:id="@+id/test_simple_roll_status"
+        android:layout_marginTop="8dp"
+        android:layout_gravity="center_horizontal"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:visibility="gone"
+        tools:textColor="@color/glitch"
+        tools:text="Glitch"/>
     <ScrollView
         android:layout_width="@dimen/result_output_width"
         android:layout_height="0dp"

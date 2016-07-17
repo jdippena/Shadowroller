@@ -2,6 +2,7 @@ package com.imber.shadowroller;
 
 import android.content.res.Resources;
 import android.net.Uri;
+import android.support.annotation.DrawableRes;
 
 import com.imber.shadowroller.data.DbContract;
 
@@ -39,14 +40,13 @@ public class Util {
     }
 
     public enum RollStatus {
-        NORMAL, CRITICAL_SUCCESS, GLITCH, CRITICAL_GLITCH;
+        NORMAL, GLITCH, CRITICAL_GLITCH;
 
         public static RollStatus fromInt(int status) {
             switch (status) {
                 case 0: return NORMAL;
-                case 1: return CRITICAL_SUCCESS;
-                case 2: return GLITCH;
-                case 3: return CRITICAL_GLITCH;
+                case 1: return GLITCH;
+                case 2: return CRITICAL_GLITCH;
                 default: return NORMAL;
             }
         }
@@ -115,20 +115,28 @@ public class Util {
         return sixes;
     }
 
-    public static int countSuccesses(ArrayList<int[]> diceResult) {
-        int successes = 0;
-        for (int[] roll : diceResult) {
-            for (int d : roll) {
-                if (d == 5 || d == 6) successes++;
-            }
+    public static int countOnes(int[] diceResult) {
+        int ones = 0;
+        for (int d : diceResult) {
+            if (d == 1) ones++;
         }
-        return successes;
+        return ones;
     }
 
     public static int countSuccesses(int[] diceResult) {
         int successes = 0;
         for (int d : diceResult) {
             if (d == 5 || d == 6) successes++;
+        }
+        return successes;
+    }
+
+    public static int countSuccesses(ArrayList<int[]> diceResult) {
+        int successes = 0;
+        for (int[] roll : diceResult) {
+            for (int d : roll) {
+                if (d == 5 || d == 6) successes++;
+            }
         }
         return successes;
     }
@@ -140,9 +148,42 @@ public class Util {
         return Math.min(Math.max(1, dice), res.getInteger(maxDiceNumberId));
     }
 
-    // TODO: implement this
     public static RollStatus getRollStatus(int[] result) {
+        int successes = countSuccesses(result);
+        int ones = countOnes(result);
+        if (ones > result.length / 2) {
+            if (successes == 0) {
+                return RollStatus.CRITICAL_GLITCH;
+            }
+            return RollStatus.GLITCH;
+        }
         return RollStatus.NORMAL;
+    }
+
+    @DrawableRes
+    public static int getResultCircleIdFromRollStatus(RollStatus status) {
+        switch (status) {
+            case NORMAL: return R.drawable.roll_result_circle;
+            case GLITCH: return R.drawable.roll_result_circle_glitch;
+            case CRITICAL_GLITCH: return R.drawable.roll_result_circle_critical_glitch;
+            default: return R.drawable.roll_result_circle;
+        }
+    }
+
+    public static int getColorFromRollStatus(Resources res, RollStatus status) {
+        switch (status) {
+            case GLITCH: return res.getColor(R.color.glitch);
+            case CRITICAL_GLITCH: return res.getColor(R.color.critical_glitch);
+            default: return res.getColor(R.color.gray);
+        }
+    }
+
+    public static String getNameFromRollStatus(Resources res, RollStatus status) {
+        switch (status) {
+            case GLITCH: return res.getString(R.string.glitch);
+            case CRITICAL_GLITCH: return res.getString(R.string.critical_glitch);
+            default: return "";
+        }
     }
 
     public static String resultToOutput(int[] diceResult) {

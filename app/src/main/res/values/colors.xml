@@ -4,5 +4,7 @@
     <color name="primary_dark">#20581D</color>
     <color name="accent">#7C408C</color>
     <color name="roll_button_red">#CE0000</color>
+    <color name="glitch">#FB8C00</color>
+    <color name="critical_glitch">#D32F2F</color>
     <color name="gray">#CCCCCC</color>
 </resources>

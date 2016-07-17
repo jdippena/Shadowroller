@@ -20,6 +20,8 @@
     <string name="untitled">Untitled</string>
     <string name="probability_hits_label">Hits</string>
     <string name="probability_probability_label">Probability</string>
+    <string name="glitch">Glitch</string>
+    <string name="critical_glitch">Critical Glitch</string>
 
     <string name="text_minus_button" translatable="false">–</string>
     <string name="text_plus_button" translatable="false">+</string>
