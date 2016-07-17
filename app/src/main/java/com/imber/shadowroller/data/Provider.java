@@ -17,22 +17,24 @@ public class Provider extends ContentProvider {
     private static final UriMatcher sUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
     private static final int HISTORY = 0;
     private static final int COMMON_ROLLS = 1;
-    private static final int PROBABILITY_NORMAL = 2;
-    private static final int PROBABILITY_RULE_OF_SIX = 3;
-    private static final int PROBABILITY_PUSH_THE_LIMIT = 4;
-    private static final int PROBABILITY_NORMAL_CUMULATIVE = 5;
-    private static final int PROBABILITY_RULE_OF_SIX_CUMULATIVE = 6;
-    private static final int PROBABILITY_PUSH_THE_LIMIT_CUMULATIVE = 7;
-    private static final int PROBABILITY_NORMAL_WITH_DICE = 8;
-    private static final int PROBABILITY_RULE_OF_SIX_WITH_DICE = 9;
-    private static final int PROBABILITY_PUSH_THE_LIMIT_WITH_DICE = 10;
-    private static final int PROBABILITY_NORMAL_CUMULATIVE_WITH_DICE = 11;
-    private static final int PROBABILITY_RULE_OF_SIX_CUMULATIVE_WITH_DICE = 12;
-    private static final int PROBABILITY_PUSH_THE_LIMIT_CUMULATIVE_WITH_DICE = 13;
+    private static final int COMMON_ROLLS_ITEM = 2;
+    private static final int PROBABILITY_NORMAL = 3;
+    private static final int PROBABILITY_RULE_OF_SIX = 4;
+    private static final int PROBABILITY_PUSH_THE_LIMIT = 5;
+    private static final int PROBABILITY_NORMAL_CUMULATIVE = 6;
+    private static final int PROBABILITY_RULE_OF_SIX_CUMULATIVE = 7;
+    private static final int PROBABILITY_PUSH_THE_LIMIT_CUMULATIVE = 8;
+    private static final int PROBABILITY_NORMAL_WITH_DICE = 9;
+    private static final int PROBABILITY_RULE_OF_SIX_WITH_DICE = 10;
+    private static final int PROBABILITY_PUSH_THE_LIMIT_WITH_DICE = 11;
+    private static final int PROBABILITY_NORMAL_CUMULATIVE_WITH_DICE = 12;
+    private static final int PROBABILITY_RULE_OF_SIX_CUMULATIVE_WITH_DICE = 13;
+    private static final int PROBABILITY_PUSH_THE_LIMIT_CUMULATIVE_WITH_DICE = 14;
 
     static {
         sUriMatcher.addURI(DbContract.CONTENT_AUTHORITY, DbContract.PATH_HISTORY, HISTORY);
         sUriMatcher.addURI(DbContract.CONTENT_AUTHORITY, DbContract.PATH_COMMON_ROLLS, COMMON_ROLLS);
+        sUriMatcher.addURI(DbContract.CONTENT_AUTHORITY, DbContract.PATH_COMMON_ROLLS + "/#", COMMON_ROLLS_ITEM);
         sUriMatcher.addURI(DbContract.CONTENT_AUTHORITY, DbContract.PATH_NORMAL, PROBABILITY_NORMAL);
         sUriMatcher.addURI(DbContract.CONTENT_AUTHORITY, DbContract.PATH_RULE_OF_SIX, PROBABILITY_RULE_OF_SIX);
         sUriMatcher.addURI(DbContract.CONTENT_AUTHORITY, DbContract.PATH_PUSH_THE_LIMIT, PROBABILITY_PUSH_THE_LIMIT);
@@ -61,6 +63,8 @@ public class Provider extends ContentProvider {
                 return DbContract.HistoryTable.CONTENT_TYPE;
             case COMMON_ROLLS:
                 return DbContract.CommonRollsTable.CONTENT_TYPE;
+            case COMMON_ROLLS_ITEM:
+                return DbContract.CommonRollsTable.CONTENT_ITEM_TYPE;
             case PROBABILITY_NORMAL:
                 return DbContract.NormalProbabilityTable.CONTENT_TYPE;
             case PROBABILITY_RULE_OF_SIX:
@@ -128,7 +132,21 @@ public class Provider extends ContentProvider {
 
     @Override
     public int update(@NonNull Uri uri, ContentValues values, String selection, String[] selectionArgs) {
-        return 0;
+        int rowsUpdated;
+        SQLiteDatabase db = mDbHelper.getWritableDatabase();
+        switch (sUriMatcher.match(uri)) {
+            case COMMON_ROLLS_ITEM:
+                selection = DbContract.CommonRollsTable._ID + " = ?";
+                selectionArgs = new String[] {uri.getLastPathSegment()};
+                rowsUpdated = db.update(DbContract.CommonRollsTable.TABLE_NAME, values, selection, selectionArgs);
+                break;
+            default:
+                throw new UnsupportedOperationException("Unknown uri: " + uri.toString());
+        }
+        if (getContext() != null) {
+            getContext().getContentResolver().notifyChange(uri, null);
+        }
+        return rowsUpdated;
     }
 
     @Nullable

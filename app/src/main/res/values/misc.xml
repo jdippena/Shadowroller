@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer name="default_dice_number">10</integer>
+    <integer name="max_dice_number">100</integer>
+    <integer name="max_probability_dice_number">50</integer>
+</resources>

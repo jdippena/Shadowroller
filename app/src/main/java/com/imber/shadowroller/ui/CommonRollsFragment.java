@@ -17,7 +17,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CheckBox;
 import android.widget.TextView;
 
 import com.h6ah4i.android.widget.advrecyclerview.swipeable.RecyclerViewSwipeManager;
@@ -28,15 +27,21 @@ import com.h6ah4i.android.widget.advrecyclerview.swipeable.action.SwipeResultAct
 import com.h6ah4i.android.widget.advrecyclerview.swipeable.action.SwipeResultActionRemoveItem;
 import com.h6ah4i.android.widget.advrecyclerview.utils.AbstractSwipeableItemViewHolder;
 import com.imber.shadowroller.R;
+import com.imber.shadowroller.Util;
 import com.imber.shadowroller.data.DbContract;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 public class CommonRollsFragment extends Fragment
         implements AddCommonRollDialogFragment.AddDialogCallbacks, LoaderManager.LoaderCallbacks<Cursor> {
 
     private CommonRollsAdapter mAdapter;
     private static final int LOADER_ID = 0;
+    private Random mRandom = new Random();
+    public static final String NAME_KEY = "name";
+    public static final String DICE_KEY = "dice";
+    public static final String ID_KEY = "id";
 
     public CommonRollsFragment() {}
 
@@ -60,27 +65,33 @@ public class CommonRollsFragment extends Fragment
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                revealAddDialog();
+                revealAddDialog(null);
             }
         });
         getLoaderManager().initLoader(LOADER_ID, null, this);
         return rootView;
     }
 
-    private void revealAddDialog() {
+    private void revealAddDialog(Bundle args) {
         FragmentManager fm = getActivity().getSupportFragmentManager();
         AddCommonRollDialogFragment addDialog = new AddCommonRollDialogFragment();
         addDialog.setCallback(this);
+        addDialog.setArguments(args);
         addDialog.show(fm, "addDialog");
     }
 
     @Override
-    public void onPositiveClicked(String name, int dice) {
-        ContentValues values = new ContentValues(3);
+    public void onPositiveClicked(String name, int dice, long id) {
+        ContentValues values = new ContentValues(2);
         values.put(DbContract.CommonRollsTable.NAME, name);
         values.put(DbContract.CommonRollsTable.DICE, dice);
-        values.put(DbContract.CommonRollsTable.EDGE, Boolean.FALSE);
-        getContext().getContentResolver().insert(DbContract.CommonRollsTable.CONTENT_URI, values);
+        if (id != -1) {
+            getContext().getContentResolver().update(
+                    DbContract.CommonRollsTable.buildUriFromId(id),
+                    values, null, null);
+        } else {
+            getContext().getContentResolver().insert(DbContract.CommonRollsTable.CONTENT_URI, values);
+        }
         getLoaderManager().restartLoader(LOADER_ID, null, this);
     }
 
@@ -132,8 +143,8 @@ public class CommonRollsFragment extends Fragment
         public void onBindViewHolder(ViewHolder holder, int position) {
             Item item = mData.get(position);
             holder.nameTextView.setText(item.name);
-            holder.edgeCheckBox.setChecked(item.edge);
             holder.diceTextView.setText(String.valueOf(item.dice));
+            holder.setId(item.id);
         }
 
         @Override
@@ -218,21 +229,43 @@ public class CommonRollsFragment extends Fragment
 
     private class ViewHolder extends AbstractSwipeableItemViewHolder {
         public TextView nameTextView, diceTextView, resultTextView;
-        public CheckBox edgeCheckBox;
         public View container;
+        public long id;
 
         public ViewHolder(View v) {
             super(v);
             container = v;
+            container.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    Bundle args = new Bundle(2);
+                    args.putString(NAME_KEY, nameTextView.getText().toString());
+                    args.putInt(DICE_KEY, Integer.parseInt(diceTextView.getText().toString()));
+                    args.putLong(ID_KEY, id);
+                    revealAddDialog(args);
+                    return true;
+                }
+            });
             nameTextView = (TextView) v.findViewById(R.id.name_text_view);
             diceTextView = (TextView) v.findViewById(R.id.dice_text_view);
+            diceTextView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    int dice = Integer.valueOf(diceTextView.getText().toString());
+                    int successes = Util.countSuccesses(Util.doSimpleRoll(mRandom, dice, Util.TestModifier.NONE));
+                    resultTextView.setText(String.valueOf(successes));
+                }
+            });
             resultTextView = (TextView) v.findViewById(R.id.result_text_view);
-            edgeCheckBox = (CheckBox) v.findViewById(R.id.edge_check_box);
         }
 
         @Override
         public View getSwipeableContainerView() {
             return container;
+        }
+
+        public void setId(long id) {
+            this.id = id;
         }
     }
 
@@ -240,12 +273,10 @@ public class CommonRollsFragment extends Fragment
         long id;
         String name;
         int dice;
-        boolean edge;
 
         public Item(Cursor cursor) {
             id = cursor.getLong(cursor.getColumnIndex(DbContract.CommonRollsTable._ID));
             name = cursor.getString(cursor.getColumnIndex(DbContract.CommonRollsTable.NAME));
-            edge = cursor.getInt(cursor.getColumnIndex(DbContract.CommonRollsTable.EDGE)) == 1;
             dice = cursor.getInt(cursor.getColumnIndex(DbContract.CommonRollsTable.DICE));
         }
     }

@@ -17,9 +17,12 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.TextView;
 
 import com.imber.shadowroller.R;
+import com.imber.shadowroller.Util;
 
 public class AddCommonRollDialogFragment extends DialogFragment {
-    private int mDice = 10;
+    private String mName;
+    private int mDice;
+    private long mId;
     private TextInputEditText mNameEditText;
     private TextInputEditText mDiceEditText;
     private AddDialogCallbacks mListener;
@@ -35,6 +38,20 @@ public class AddCommonRollDialogFragment extends DialogFragment {
         mDiceEditText = (TextInputEditText) rootView.findViewById(R.id.edit_text_common_rolls_add_dice);
         TextView minusButton = (TextView) rootView.findViewById(R.id.minus_button);
         TextView plusButton = (TextView) rootView.findViewById(R.id.plus_button);
+
+        Bundle args = getArguments();
+        int titleId;
+        if (args != null) {
+            mName = args.getString(CommonRollsFragment.NAME_KEY);
+            mDice = args.getInt(CommonRollsFragment.DICE_KEY);
+            mId = args.getLong(CommonRollsFragment.ID_KEY);
+            titleId = R.string.title_common_roll_add_edit;
+        } else {
+            mName = "";
+            mDice = getResources().getInteger(R.integer.default_dice_number);
+            mId = -1;
+            titleId = R.string.title_common_roll_add;
+        }
 
         mDiceEditText.setText(String.valueOf(mDice));
         mDiceEditText.addTextChangedListener(new TextWatcher() {
@@ -61,7 +78,7 @@ public class AddCommonRollDialogFragment extends DialogFragment {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 if (!hasFocus) {
-                    setDefaultDiceValue();
+                    setDiceValWithDefault();
                 }
             }
         });
@@ -69,13 +86,15 @@ public class AddCommonRollDialogFragment extends DialogFragment {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
-                    setDefaultDiceValue();
+                    setDiceValWithDefault();
                     processDone();
                     return true;
                 }
                 return false;
             }
         });
+
+        mNameEditText.setText(mName);
 
         minusButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -91,7 +110,7 @@ public class AddCommonRollDialogFragment extends DialogFragment {
         });
 
         builder.setView(rootView)
-                .setTitle(R.string.title_common_roll_add)
+                .setTitle(titleId)
                 .setPositiveButton(R.string.done, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -110,24 +129,20 @@ public class AddCommonRollDialogFragment extends DialogFragment {
         return dialog;
     }
 
-    private void setDefaultDiceValue() {
+    private void setDiceValWithDefault() {
         String value = mDiceEditText.getText().toString();
         if (value.equals("") || Integer.valueOf(value) == 0) {
-            mDice = 1;
-            mDiceEditText.setText(String.valueOf(mDice));
-        } else {
-            mDice = Integer.valueOf(value);
-            mDiceEditText.setText(String.valueOf(mDice));
+            value = "1";
         }
+        setDice(Integer.valueOf(value));
     }
 
     private void processDone() {
-        mListener.onPositiveClicked(mNameEditText.getText().toString(), mDice);
+        mListener.onPositiveClicked(mNameEditText.getText().toString(), mDice, mId);
     }
 
     private void setDice(int dice) {
-        int maxDiceNum = 100;
-        mDice = Math.min(Math.max(1, dice), maxDiceNum);
+        mDice = Util.getBoundedDiceNumber(getResources(), dice, Util.TestType.SIMPLE_TEST);
         mDiceEditText.setText(String.valueOf(mDice));
     }
 
@@ -136,7 +151,7 @@ public class AddCommonRollDialogFragment extends DialogFragment {
     }
 
     public interface AddDialogCallbacks {
-        void onPositiveClicked(String name, int dice);
+        void onPositiveClicked(String name, int dice, long id);
         void onNegativeClicked();
     }
 }

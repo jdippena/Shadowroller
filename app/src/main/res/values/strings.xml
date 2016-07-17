@@ -12,6 +12,7 @@
     <string name="modifier_rule_of_six">Rule of Six</string>
     <string name="modifier_push_the_limit">Push the Limit</string>
     <string name="title_common_roll_add">Add Roll</string>
+    <string name="title_common_roll_add_edit">Edit Roll</string>
     <string name="hint_common_roll_add_name">Test Name</string>
     <string name="hint_common_roll_add_dice">Dice</string>
     <string name="done">Done</string>

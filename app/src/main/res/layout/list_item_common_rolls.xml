@@ -18,11 +18,6 @@
             android:id="@+id/name_text_view"
             android:textAppearance="@android:style/TextAppearance.DeviceDefault.WindowTitle"
             tools:text="Initiative"/>
-        <CheckBox
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/edge_check_box"
-            android:text="@string/edge" />
     </LinearLayout>
     <FrameLayout
         android:layout_width="0dp"

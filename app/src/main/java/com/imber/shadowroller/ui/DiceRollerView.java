@@ -1,7 +1,6 @@
 package com.imber.shadowroller.ui;
 
 import android.content.Context;
-import android.net.Uri;
 import android.support.annotation.IdRes;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -15,7 +14,6 @@ import android.widget.TextView;
 import com.imber.shadowroller.R;
 import com.imber.shadowroller.Util;
 
-import java.util.ArrayList;
 import java.util.Random;
 
 public class DiceRollerView extends RelativeLayout {
@@ -33,9 +31,8 @@ public class DiceRollerView extends RelativeLayout {
     private Util.ProbabilityDiceListener mProbabilityDiceListener;
 
     private Random mRandom = new Random();
-    private int mDice = 10;
-    private int mMaxDiceNum = 100;
-    private Util.TestType mTestType = Util.TestType.SIMPLE_TEST;
+    private int mDice;
+    private Util.TestType mTestType;
     private Util.TestModifier mModifierStatus = Util.TestModifier.NONE;
 
     public DiceRollerView(Context context) {
@@ -55,6 +52,8 @@ public class DiceRollerView extends RelativeLayout {
 
     private void init(Context context, AttributeSet attrs, int defStyleAttr) {
         mContext = context;
+        mDice = context.getResources().getInteger(R.integer.default_dice_number);
+
         LayoutInflater.from(context).inflate(R.layout.layout_dice_roller, this, true);
         mBigRedButton = (TextView) findViewById(R.id.big_red_button);
         mMinusButton = (TextView) findViewById(R.id.minus_button);
@@ -64,6 +63,7 @@ public class DiceRollerView extends RelativeLayout {
         for (int i = 0; i < mModifiers.getChildCount(); i++) {
             mModifiers.getChildAt(i).setEnabled(false);
         }
+        setType(Util.TestType.SIMPLE_TEST);
 
         mBigRedButton.setText(String.valueOf(mDice));
         mBigRedButton.setOnClickListener(new BigRedButtonClickListener());
@@ -109,17 +109,14 @@ public class DiceRollerView extends RelativeLayout {
             case SIMPLE_TEST:
                 mEdgeCheckbox.setVisibility(VISIBLE);
                 mModifiers.setVisibility(VISIBLE);
-                mMaxDiceNum = 100;
                 break;
             case EXTENDED_TEST:
                 mEdgeCheckbox.setVisibility(INVISIBLE);
                 mModifiers.setVisibility(INVISIBLE);
-                mMaxDiceNum = 100;
                 break;
             case PROBABILITY:
                 mEdgeCheckbox.setVisibility(VISIBLE);
                 mModifiers.setVisibility(VISIBLE);
-                mMaxDiceNum = 50;
                 setDice(mDice);
                 break;
         }
@@ -137,48 +134,8 @@ public class DiceRollerView extends RelativeLayout {
         mProbabilityDiceListener = listener;
     }
 
-    private ArrayList<int[]> doSimpleRoll() {
-        ArrayList<int[]> result = new ArrayList<>();
-        switch (mModifierStatus) {
-            case NONE:
-                result.add(Util.doSingleRoll(mRandom, mDice));
-                break;
-            case RULE_OF_SIX:
-                int numSixes = mDice;
-                do {
-                    int[] roll = Util.doSingleRoll(mRandom, numSixes);
-                    result.add(roll);
-                    numSixes = Util.countSixes(roll);
-                } while (numSixes > 0);
-                break;
-            case PUSH_THE_LIMIT:
-                int[] roll = Util.doSingleRoll(mRandom, mDice);
-                result.add(roll);
-                int successes = Util.countSuccesses(result);
-                if (successes != mDice) {
-                    int[] reRoll = Util.doSingleRoll(mRandom, mDice - successes);
-                    result.add(reRoll);
-                }
-                break;
-        }
-        return result;
-    }
-
-    private ArrayList<int[]> doExtendedRoll() {
-        ArrayList<int[]> result = new ArrayList<>(mDice);
-        for (int i = 0; i < mDice; i++) {
-            result.add(Util.doSingleRoll(mRandom, mDice - i));
-        }
-        return result;
-    }
-
-    private Uri doProbabilityRoll() {
-        // TODO: add non-cumulative toggle
-        return Util.buildProbabilityUri(mModifierStatus, mDice, true);
-    }
-
     private void setDice(int dice) {
-        mDice = Math.min(Math.max(1, dice), mMaxDiceNum);
+        mDice = Util.getBoundedDiceNumber(getResources(), dice, mTestType);
         mBigRedButton.setText(String.valueOf(mDice));
     }
 
@@ -198,13 +155,18 @@ public class DiceRollerView extends RelativeLayout {
         public void onClick(View v) {
             switch (mTestType) {
                 case SIMPLE_TEST:
-                    mSimpleTestDiceListener.onRollPerformed(doSimpleRoll(), mModifierStatus);
+                    mSimpleTestDiceListener.onRollPerformed(
+                            Util.doSimpleRoll(mRandom, mDice, mModifierStatus),
+                            mModifierStatus);
                     break;
                 case EXTENDED_TEST:
-                    mExtendedTestDiceListener.onExtendedRollPerformed(doExtendedRoll());
+                    mExtendedTestDiceListener.onExtendedRollPerformed(
+                            Util.doExtendedRoll(mRandom, mDice));
                     break;
                 case PROBABILITY:
-                    mProbabilityDiceListener.onProbabilityQueried(doProbabilityRoll());
+                    // TODO: add non-cumulative toggle
+                    mProbabilityDiceListener.onProbabilityQueried(
+                            Util.buildProbabilityUri(mModifierStatus, mDice, true));
                     break;
             }
         }

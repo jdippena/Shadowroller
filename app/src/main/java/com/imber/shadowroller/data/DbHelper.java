@@ -36,8 +36,7 @@ public class DbHelper extends SQLiteOpenHelper {
             DbContract.CommonRollsTable.TABLE_NAME + "( " +
             DbContract.CommonRollsTable._ID + " INTEGER PRIMARY KEY, " +
             DbContract.CommonRollsTable.NAME + " TEXT NOT NULL, " +
-            DbContract.CommonRollsTable.DICE + " INTEGER NOT NULL, " +
-            DbContract.CommonRollsTable.EDGE + " INTEGER NOT NULL );";
+            DbContract.CommonRollsTable.DICE + " INTEGER NOT NULL );";
 
     public static final String SQL_CREATE_NORMAL_PROBABILITY = "CREATE TABLE " +
             DbContract.NormalProbabilityTable.TABLE_NAME + "( " +

@@ -52,11 +52,12 @@ public final class DbContract {
         public static final String TABLE_NAME = "common_rolls";
         public static final String CONTENT_TYPE =
                 ContentResolver.CURSOR_DIR_BASE_TYPE + "/vnd." + CONTENT_AUTHORITY + "." + TABLE_NAME;
+        public static final String CONTENT_ITEM_TYPE =
+                ContentResolver.CURSOR_ITEM_BASE_TYPE + "/vnd." + CONTENT_AUTHORITY + "." + TABLE_NAME;
 
         public static final String _ID = "_id";
         public static final String NAME ="name";
         public static final String DICE = "dice";
-        public static final String EDGE = "edge";
 
         public static Uri buildUriFromId(long id) {
             return ContentUris.withAppendedId(CONTENT_URI, id);
