@@ -154,10 +154,11 @@ public class CommonRollsFragment extends Fragment
         }
 
         public void deleteItem(int position) {
+            long id = mData.get(position).id;
             mData.remove(position);
             notifyItemRemoved(position);
             mViewEventHandled = true;
-            new DeleteItemTask().execute(position);
+            new DeleteItemTask().execute(id);
         }
 
         @Override
@@ -195,11 +196,10 @@ public class CommonRollsFragment extends Fragment
             }
         }
 
-        private class DeleteItemTask extends AsyncTask<Integer, Void, Void> {
+        private class DeleteItemTask extends AsyncTask<Long, Void, Void> {
             @Override
-            protected Void doInBackground(Integer... params) {
-                mCursor.moveToPosition(params[0]);
-                long id  = mCursor.getLong(mCursor.getColumnIndex(DbContract.CommonRollsTable._ID));
+            protected Void doInBackground(Long... params) {
+                long id  = params[0];
                 ContentResolver resolver = getContext().getContentResolver();
                 resolver.delete(
                         DbContract.CommonRollsTable.CONTENT_URI,
