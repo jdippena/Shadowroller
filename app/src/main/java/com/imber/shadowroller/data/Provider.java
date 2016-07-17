@@ -135,7 +135,7 @@ public class Provider extends ContentProvider {
     @Override
     public Uri insert(@NonNull Uri uri, ContentValues values) {
         SQLiteDatabase db = mDbHelper.getWritableDatabase();
-        Uri retUri = null;
+        Uri retUri;
         long id;
         switch (sUriMatcher.match(uri)) {
             case HISTORY:
@@ -193,6 +193,9 @@ public class Provider extends ContentProvider {
                 break;
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri.toString());
+        }
+        if (getContext() != null) {
+            getContext().getContentResolver().notifyChange(uri, null);
         }
         return numDeleted;
     }

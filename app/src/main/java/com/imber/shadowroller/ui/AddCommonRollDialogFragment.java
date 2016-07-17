@@ -19,12 +19,9 @@ import android.widget.TextView;
 import com.imber.shadowroller.R;
 
 public class AddCommonRollDialogFragment extends DialogFragment {
-    private String mName = "";
     private int mDice = 10;
     private TextInputEditText mNameEditText;
     private TextInputEditText mDiceEditText;
-    private TextView mMinusButton;
-    private TextView mPlusButton;
     private AddDialogCallbacks mListener;
 
     @NonNull
@@ -36,27 +33,8 @@ public class AddCommonRollDialogFragment extends DialogFragment {
         View rootView = inflater.inflate(R.layout.layout_common_roll_add, null);
         mNameEditText = (TextInputEditText) rootView.findViewById(R.id.edit_text_common_rolls_add_name);
         mDiceEditText = (TextInputEditText) rootView.findViewById(R.id.edit_text_common_rolls_add_dice);
-        mMinusButton = (TextView) rootView.findViewById(R.id.minus_button);
-        mPlusButton = (TextView) rootView.findViewById(R.id.plus_button);
-
-        mNameEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (!hasFocus) {
-                    setDefaultNameValue(mNameEditText.getText().toString());
-                }
-            }
-        });
-        mNameEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (actionId == EditorInfo.IME_ACTION_DONE) {
-                    setDefaultNameValue(mNameEditText.getText().toString());
-                    mDiceEditText.requestFocus();
-                }
-                return false;
-            }
-        });
+        TextView minusButton = (TextView) rootView.findViewById(R.id.minus_button);
+        TextView plusButton = (TextView) rootView.findViewById(R.id.plus_button);
 
         mDiceEditText.setText(String.valueOf(mDice));
         mDiceEditText.addTextChangedListener(new TextWatcher() {
@@ -99,16 +77,16 @@ public class AddCommonRollDialogFragment extends DialogFragment {
             }
         });
 
-        mMinusButton.setOnClickListener(new View.OnClickListener() {
+        minusButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                decrementDice();
+                setDice(mDice - 1);
             }
         });
-        mPlusButton.setOnClickListener(new View.OnClickListener() {
+        plusButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                incrementDice();
+                setDice(mDice + 1);
             }
         });
 
@@ -132,18 +110,8 @@ public class AddCommonRollDialogFragment extends DialogFragment {
         return dialog;
     }
 
-    private void setDefaultNameValue(String name) {
-        if (name.equals("")) {
-            mName = getString(R.string.untitled);
-            mNameEditText.setText(mName);
-        } else {
-            mName = name;
-        }
-    }
-
     private void setDefaultDiceValue() {
         String value = mDiceEditText.getText().toString();
-        value = value.replaceFirst("^0+(?!$)", ""); // remove leading zeros
         if (value.equals("") || Integer.valueOf(value) == 0) {
             mDice = 1;
             mDiceEditText.setText(String.valueOf(mDice));
@@ -154,16 +122,12 @@ public class AddCommonRollDialogFragment extends DialogFragment {
     }
 
     private void processDone() {
-        mListener.onPositiveClicked(mName, mDice);
+        mListener.onPositiveClicked(mNameEditText.getText().toString(), mDice);
     }
 
-    private void decrementDice() {
-        mDice = Math.max(1, mDice - 1);
-        mDiceEditText.setText(String.valueOf(mDice));
-    }
-
-    private void incrementDice() {
-        mDice++;
+    private void setDice(int dice) {
+        int maxDiceNum = 100;
+        mDice = Math.min(Math.max(1, dice), maxDiceNum);
         mDiceEditText.setText(String.valueOf(mDice));
     }
 

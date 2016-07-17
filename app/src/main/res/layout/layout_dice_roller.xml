@@ -70,8 +70,8 @@
         </FrameLayout>
     </LinearLayout>
     <TextView
-        android:layout_width="@dimen/dice_roller_view_roll_button_size"
-        android:layout_height="@dimen/dice_roller_view_roll_button_size"
+        android:layout_width="@dimen/dice_roller_view_big_red_button_size"
+        android:layout_height="@dimen/dice_roller_view_big_red_button_size"
         android:id="@+id/big_red_button"
         android:layout_marginTop="0dp"
         android:background="@drawable/roll_circle"
