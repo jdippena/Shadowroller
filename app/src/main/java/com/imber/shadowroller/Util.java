@@ -1,11 +1,12 @@
 package com.imber.shadowroller;
 
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.support.annotation.DrawableRes;
 
 import com.imber.shadowroller.data.DbContract;
-
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -24,6 +25,15 @@ public class Util {
                 default: return SIMPLE_TEST;
             }
         }
+
+        public int toInt() {
+            switch (this) {
+                case SIMPLE_TEST: return 0;
+                case EXTENDED_TEST: return 1;
+                case PROBABILITY: return 2;
+                default: return 0;
+            }
+        }
     }
 
     public enum TestModifier {
@@ -37,6 +47,15 @@ public class Util {
                 default: return NONE;
             }
         }
+
+        public int toInt() {
+            switch (this) {
+                case NONE: return 0;
+                case RULE_OF_SIX: return 1;
+                case PUSH_THE_LIMIT: return 2;
+                default: return 0;
+            }
+        }
     }
 
     public enum RollStatus {
@@ -48,6 +67,15 @@ public class Util {
                 case 1: return GLITCH;
                 case 2: return CRITICAL_GLITCH;
                 default: return NORMAL;
+            }
+        }
+
+        public int toInt() {
+            switch (this) {
+                case NORMAL: return 0;
+                case GLITCH: return 1;
+                case CRITICAL_GLITCH: return 2;
+                default: return 0;
             }
         }
     }
@@ -178,6 +206,22 @@ public class Util {
         }
     }
 
+    public static String getNameFromTestType(Resources res, TestType type) {
+        switch (type) {
+            case SIMPLE_TEST: return res.getString(R.string.name_test_simple);
+            case EXTENDED_TEST: return res.getString(R.string.name_test_extended);
+            default: return res.getString(R.string.list_item_history_default_name);
+        }
+    }
+
+    public static String getNameFromTestModifier(Resources res, TestModifier modifier) {
+        switch (modifier) {
+            case RULE_OF_SIX: return res.getString(R.string.modifier_rule_of_six);
+            case PUSH_THE_LIMIT: return res.getString(R.string.modifier_push_the_limit);
+            default: return res.getString(R.string.list_item_history_default_name);
+        }
+    }
+
     public static String getNameFromRollStatus(Resources res, RollStatus status) {
         switch (status) {
             case GLITCH: return res.getString(R.string.glitch);
@@ -192,6 +236,16 @@ public class Util {
             display += String.valueOf(diceResult[i]) + ", ";
         }
         display += String.valueOf(diceResult[diceResult.length - 1]) + "\n";
+        return display;
+    }
+
+    public static String resultToOutput(ArrayList<int[]> diceResult) {
+        String display = "";
+        int i = 1;
+        for (int[] result : diceResult) {
+            display += String.valueOf(i) + ": " + resultToOutput(result);
+            i++;
+        }
         return display;
     }
 
@@ -242,5 +296,19 @@ public class Util {
                 break;
         }
         return uri;
+    }
+
+    public static void insertIntoHistoryTable(ContentResolver resolver, int dice, int hits, String output, boolean commonRoll, TestType type, TestModifier modifier, RollStatus rollStatus) {
+        ContentValues values = new ContentValues(8);
+        values.put(DbContract.HistoryTable.DICE, dice);
+        values.put(DbContract.HistoryTable.HITS, hits);
+        values.put(DbContract.HistoryTable.OUTPUT, output);
+        values.put(DbContract.HistoryTable.COMMON_ROLL, commonRoll);
+        values.put(DbContract.HistoryTable.TEST_TYPE, type.toInt());
+        values.put(DbContract.HistoryTable.MODIFIER, modifier.toInt());
+        values.put(DbContract.HistoryTable.STATUS, rollStatus.toInt());
+        values.put(DbContract.HistoryTable.DATE, System.currentTimeMillis());
+
+        resolver.insert(DbContract.HistoryTable.CONTENT_URI, values);
     }
 }

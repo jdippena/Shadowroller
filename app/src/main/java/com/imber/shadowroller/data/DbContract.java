@@ -35,11 +35,14 @@ public final class DbContract {
                 ContentResolver.CURSOR_DIR_BASE_TYPE + "/vnd." + CONTENT_AUTHORITY + "." + TABLE_NAME;
 
         public static final String _ID = "_id";
-        public static final String HITS = "hits";
-        public static final String OUTPUT = "output";
-        public static final String MODIFIER = "modifier";
-        public static final String STATUS = "status";
+        public static final String COMMON_ROLL = "common_roll";
         public static final String TEST_TYPE = "test_type";
+        public static final String DICE = "dice";
+        public static final String MODIFIER = "modifier";
+        public static final String HITS = "hits";
+        public static final String STATUS = "status";
+        public static final String OUTPUT = "output";
+        public static final String DATE = "date";
 
         public static Uri buildUriFromId(long id) {
             return ContentUris.withAppendedId(CONTENT_URI, id);

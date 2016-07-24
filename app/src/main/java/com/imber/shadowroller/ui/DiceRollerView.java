@@ -14,6 +14,7 @@ import android.widget.TextView;
 import com.imber.shadowroller.R;
 import com.imber.shadowroller.Util;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 public class DiceRollerView extends RelativeLayout {
@@ -153,22 +154,25 @@ public class DiceRollerView extends RelativeLayout {
     private class BigRedButtonClickListener implements View.OnClickListener {
         @Override
         public void onClick(View v) {
+            ArrayList<int[]> result = new ArrayList<>();
             switch (mTestType) {
                 case SIMPLE_TEST:
-                    mSimpleTestDiceListener.onRollPerformed(
-                            Util.doSimpleRoll(mRandom, mDice, mModifierStatus),
-                            mModifierStatus);
+                    result = Util.doSimpleRoll(mRandom, mDice, mModifierStatus);
+                    mSimpleTestDiceListener.onRollPerformed(result, mModifierStatus);
                     break;
                 case EXTENDED_TEST:
-                    mExtendedTestDiceListener.onExtendedRollPerformed(
-                            Util.doExtendedRoll(mRandom, mDice));
+                    result = Util.doExtendedRoll(mRandom, mDice);
+                    mExtendedTestDiceListener.onExtendedRollPerformed(result);
                     break;
                 case PROBABILITY:
                     // TODO: add non-cumulative toggle
                     mProbabilityDiceListener.onProbabilityQueried(
                             Util.buildProbabilityUri(mModifierStatus, mDice, true));
-                    break;
+                    return;
             }
+            Util.insertIntoHistoryTable(getContext().getContentResolver(),
+                    mDice, Util.countSuccesses(result), Util.resultToOutput(result), false,
+                    mTestType, mModifierStatus, Util.getRollStatus(result.get(0)));
         }
     }
 }

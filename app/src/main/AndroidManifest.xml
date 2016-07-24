@@ -19,10 +19,20 @@
             </intent-filter>
         </activity>
 
+        <activity android:name=".ui.HistoryActivity"
+            android:parentActivityName=".ui.MainActivity"
+            android:label="@string/history"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.imber.shadowroller.ui.MainActivity" />
+        </activity>
+
         <provider
             android:name=".data.Provider"
             android:authorities="@string/content_authority"
-            android:exported="false"/>
+            android:exported="false" />
+
     </application>
 
 </manifest>

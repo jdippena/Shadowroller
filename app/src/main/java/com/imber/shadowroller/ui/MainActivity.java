@@ -1,5 +1,6 @@
 package com.imber.shadowroller.ui;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -11,6 +12,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -70,13 +72,17 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_test_simple, menu);
+        getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case R.id.action_history:
+                Intent historyIntent = new Intent(this, HistoryActivity.class);
+                startActivity(historyIntent);
+                return true;
             case R.id.action_settings:
                 return true;
             default:
@@ -162,6 +168,7 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
     public class InitializeProbabilityTables extends AsyncTask<Void, Void, Void> {
         @Override
         protected Void doInBackground(Void... params) {
+            Log.d(TAG, "initializeProbabilityTables: ");
             DbHelper.initializeProbabilityTables(getApplicationContext());
             SharedPreferences.Editor editor =
                     PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit();

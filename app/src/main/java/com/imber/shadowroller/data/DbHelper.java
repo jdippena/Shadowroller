@@ -4,7 +4,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.res.AssetManager;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
@@ -19,18 +18,21 @@ import java.util.ArrayList;
 public class DbHelper extends SQLiteOpenHelper {
     private static final String TAG = "DbHelper";
 
-    public static final int VERSION = 1;
+    public static final int VERSION = 2;
     public static final String NAME = "shadowroller.db";
     public static final int NUMBER_OF_DICE = 50;
 
     public static final String SQL_CREATE_HISTORY = "CREATE TABLE " +
             DbContract.HistoryTable.TABLE_NAME + "(" +
             DbContract.HistoryTable._ID + " INTEGER PRIMARY KEY, " +
-            DbContract.HistoryTable.HITS + " INTEGER NOT NULL, " +
-            DbContract.HistoryTable.OUTPUT + " TEXT NOT NULL, " +
+            DbContract.HistoryTable.COMMON_ROLL + " INTEGER NOT NULL, " +
+            DbContract.HistoryTable.TEST_TYPE + " INTEGER NOT NULL, " +
+            DbContract.HistoryTable.DICE + " INTEGER NOT NULL, " +
             DbContract.HistoryTable.MODIFIER + " INTEGER NOT NULL, " +
-            DbContract.HistoryTable.STATUS + " INTEGER NOT NULL," +
-            DbContract.HistoryTable.TEST_TYPE + " INTEGER NOT NULL );";
+            DbContract.HistoryTable.HITS + " INTEGER NOT NULL, " +
+            DbContract.HistoryTable.STATUS + " INTEGER NOT NULL, " +
+            DbContract.HistoryTable.OUTPUT + " TEXT NOT NULL, " +
+            DbContract.HistoryTable.DATE + " INTEGER NOT NULL );";
 
     public static final String SQL_CREATE_COMMON_ROLLS = "CREATE TABLE " +
             DbContract.CommonRollsTable.TABLE_NAME + "( " +
@@ -140,22 +142,7 @@ public class DbHelper extends SQLiteOpenHelper {
         return null;
     }
 
-    private static boolean probabilityDatabasesExist(SQLiteDatabase db) {
-        boolean exists;
-        try {
-            db = SQLiteDatabase.openDatabase(DbContract.PATH_NORMAL, null, SQLiteDatabase.OPEN_READONLY);
-            exists = true;
-            db.close();
-        } catch (SQLiteException e) {
-            exists = false;
-        }
-        return exists;
-    }
-
     public static void initializeProbabilityTables(final Context context) {
-        DbHelper dbHelper = new DbHelper(context);
-        // TODO: for some reason this is necessary...
-        dbHelper.onUpgrade(dbHelper.getWritableDatabase(), VERSION, VERSION);
         AssetManager assetManager = context.getAssets();
         for (Util.TestModifier modifier : Util.TestModifier.values()) {
             for (boolean cumulative : new boolean[] {true, false}) {

@@ -156,8 +156,10 @@ public class CommonRollsFragment extends Fragment
             mCursor = cursor;
             if (!mViewEventHandled) {
                 mData.clear();
-                while (mCursor.moveToNext()) {
-                    mData.add(new Item(cursor));
+                if (mCursor != null) {
+                    while (mCursor.moveToNext()) {
+                        mData.add(new Item(cursor));
+                    }
                 }
                 notifyDataSetChanged();
             }
@@ -257,6 +259,9 @@ public class CommonRollsFragment extends Fragment
                     resultTextView.setBackgroundResource(
                             Util.getResultCircleIdFromRollStatus(Util.getRollStatus(output.get(0))));
                     resultTextView.setText(String.valueOf(successes));
+                    Util.insertIntoHistoryTable(getContext().getContentResolver(), dice, successes,
+                            Util.resultToOutput(output), true, Util.TestType.SIMPLE_TEST,
+                            Util.TestModifier.NONE, Util.getRollStatus(output.get(0)));
                 }
             });
             resultTextView = (TextView) v.findViewById(R.id.result_text_view);
