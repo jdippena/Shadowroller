@@ -31,6 +31,7 @@ public class ProbabilityFragment extends Fragment implements Util.ProbabilityDic
     private RecyclerView mRecyclerView;
 
     private static final int LOADER_ID = 0;
+    private String mUri = "";
     private static final String URI_KEY = "query_uri";
 
     private int mAccuracy = 2;
@@ -49,19 +50,30 @@ public class ProbabilityFragment extends Fragment implements Util.ProbabilityDic
         mAdapter = new ProbabilityAdapter();
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        if (savedInstanceState != null) {
+            mUri = savedInstanceState.getString(URI_KEY);
+            if (mUri != null && !mUri.equals("")) {
+                getLoaderManager().restartLoader(LOADER_ID, null, this);
+            }
+        }
         return rootView;
     }
 
     @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString(URI_KEY, mUri);
+    }
+
+    @Override
     public void onProbabilityQueried(Uri uri) {
-        Bundle args = new Bundle(1);
-        args.putString(URI_KEY, uri.toString());
-        getLoaderManager().restartLoader(LOADER_ID, args, this);
+        mUri = uri.toString();
+        getLoaderManager().restartLoader(LOADER_ID, null, this);
     }
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        Uri uri = Uri.parse(args.getString(URI_KEY));
+        Uri uri = Uri.parse(mUri);
         String columnName = DbContract.getColumnNameFromDiceNumber(DbContract.getDiceNumberFromUri(uri));
         String[] projection = new String[] {columnName};
         String selection = columnName + " >= ? ";

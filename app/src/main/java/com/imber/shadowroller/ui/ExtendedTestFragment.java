@@ -21,7 +21,13 @@ public class ExtendedTestFragment extends Fragment implements Util.ExtendedTestD
     private TextView mResultCircle;
     private ResultAdapter mResultAdapter;
 
-    private ArrayList<int[]> mResults = new ArrayList<>();
+    private String mTotalSuccesses = "";
+    private ArrayList<String> mDisplay = new ArrayList<>();
+    private ArrayList<String> mSuccessesList = new ArrayList<>();
+
+    private static final String TOTAL_SUCCESSES_KEY = "total_successes";
+    private static final String DISPLAY_KEY = "display";
+    private static final String SUCCESSES_LIST_KEY = "successes_list";
 
     public ExtendedTestFragment() {}
 
@@ -37,14 +43,40 @@ public class ExtendedTestFragment extends Fragment implements Util.ExtendedTestD
         ListView resultListView = (ListView) rootView.findViewById(R.id.test_extended_recycler_view);
         mResultAdapter = new ResultAdapter();
         resultListView.setAdapter(mResultAdapter);
+        if (savedInstanceState != null) {
+            mTotalSuccesses = savedInstanceState.getString(TOTAL_SUCCESSES_KEY);
+            mDisplay = savedInstanceState.getStringArrayList(DISPLAY_KEY);
+            mSuccessesList = savedInstanceState.getStringArrayList(SUCCESSES_LIST_KEY);
+            populate();
+        }
         return rootView;
     }
 
     @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString(TOTAL_SUCCESSES_KEY, mTotalSuccesses);
+        outState.putStringArrayList(DISPLAY_KEY, mDisplay);
+        outState.putStringArrayList(SUCCESSES_LIST_KEY, mSuccessesList);
+    }
+
+    @Override
     public void onExtendedRollPerformed(ArrayList<int[]> output) {
-        mResults = output;
-        int totalSuccesses = Util.countSuccesses(output);
-        mResultCircle.setText(String.valueOf(totalSuccesses));
+        mDisplay.clear();
+        mSuccessesList.clear();
+        int totalSuccesses = 0;
+        for (int[] result : output) {
+            mDisplay.add(Util.resultToOutput(result));
+            int successes = Util.countSuccesses(result);
+            totalSuccesses += successes;
+            mSuccessesList.add(String.valueOf(successes));
+        }
+        mTotalSuccesses = String.valueOf(totalSuccesses);
+        populate();
+    }
+
+    private void populate() {
+        mResultCircle.setText(mTotalSuccesses);
         mResultAdapter.notifyDataSetChanged();
     }
 
@@ -55,15 +87,14 @@ public class ExtendedTestFragment extends Fragment implements Util.ExtendedTestD
 
         @Override
         public int getCount() {
-            return mResults.size();
+            return mDisplay.size();
         }
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            int [] result = mResults.get(position);
             String label = String.valueOf(position + 1);
-            String output = Util.resultToOutput(result);
-            String successes = String.valueOf(Util.countSuccesses(result));
+            String output = mDisplay.get(position);
+            String successes = mSuccessesList.get(position);
             if (convertView == null) {
                 convertView = LayoutInflater.from(getContext()).inflate(R.layout.list_item_test_extended, parent, false);
             }

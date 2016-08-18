@@ -20,6 +20,14 @@ public class SimpleTestFragment extends Fragment implements Util.SimpleTestDiceL
     private TextView mResultOutput;
     private TextView mRollStatus;
 
+    private String mSuccesses = "";
+    private String mDisplay = "";
+    private int mRollStatusInt = 0;
+
+    private static final String SUCCESSES_KEY = "successes";
+    private static final String DISPLAY_KEY = "display";
+    private static final String ROLL_STATUS_KEY = "roll_status";
+
     public SimpleTestFragment() {}
 
     public static SimpleTestFragment newInstance() {
@@ -33,16 +41,39 @@ public class SimpleTestFragment extends Fragment implements Util.SimpleTestDiceL
         mResultCircle = (TextView) rootView.findViewById(R.id.test_simple_result_circle);
         mResultOutput = (TextView) rootView.findViewById(R.id.test_simple_result_output);
         mRollStatus = (TextView) rootView.findViewById(R.id.test_simple_roll_status);
+        if (savedInstanceState != null) {
+            mSuccesses = savedInstanceState.getString(SUCCESSES_KEY);
+            mDisplay = savedInstanceState.getString(DISPLAY_KEY);
+            mRollStatusInt = savedInstanceState.getInt(ROLL_STATUS_KEY, 0);
+            populate();
+        }
         return rootView;
     }
 
     @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString(SUCCESSES_KEY, mSuccesses);
+        outState.putString(DISPLAY_KEY, mDisplay);
+        outState.putInt(ROLL_STATUS_KEY, mRollStatusInt);
+    }
+
+    @Override
     public void onRollPerformed(ArrayList<int[]> output, Util.TestModifier modifier) {
-        int successes = Util.countSuccesses(output);
-        Util.RollStatus status = Util.getRollStatus(output.get(0));
+        mSuccesses = String.valueOf(Util.countSuccesses(output));
+        mRollStatusInt = Util.getRollStatus(output.get(0)).toInt();
+        mDisplay = Util.resultToOutput(output.get(0));
+        for (int i = 1; i < output.size(); i++) {
+            mDisplay += "Re-roll: " + Util.resultToOutput(output.get(i));
+        }
+        populate();
+    }
+
+    private void populate() {
+        Util.RollStatus status = Util.RollStatus.fromInt(mRollStatusInt);
         mResultCircle.setBackgroundResource(
                 Util.getResultCircleIdFromRollStatus(status));
-        mResultCircle.setText(String.valueOf(successes));
+        mResultCircle.setText(mSuccesses);
         if (status != Util.RollStatus.NORMAL) {
             mRollStatus.setTextColor(Util.getColorFromRollStatus(getResources(), status));
             mRollStatus.setText(Util.getNameFromRollStatus(getResources(), status));
@@ -50,11 +81,7 @@ public class SimpleTestFragment extends Fragment implements Util.SimpleTestDiceL
         } else {
             mRollStatus.setVisibility(View.GONE);
         }
-        String display = Util.resultToOutput(output.get(0));
-        for (int i = 1; i < output.size(); i++) {
-            display += "Re-roll: " + Util.resultToOutput(output.get(i));
-        }
-        mResultOutput.setText(display);
+        mResultOutput.setText(mDisplay);
     }
 }
 

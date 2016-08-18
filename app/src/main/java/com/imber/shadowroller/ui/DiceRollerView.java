@@ -1,6 +1,8 @@
 package com.imber.shadowroller.ui;
 
 import android.content.Context;
+import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.IdRes;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -35,6 +37,9 @@ public class DiceRollerView extends RelativeLayout {
     private int mDice;
     private Util.TestType mTestType;
     private Util.TestModifier mModifierStatus = Util.TestModifier.NONE;
+
+    private static final String DICE_KEY = "dice";
+    private static final String STATE_KEY = "state";
 
     public DiceRollerView(Context context) {
         super(context);
@@ -102,6 +107,26 @@ public class DiceRollerView extends RelativeLayout {
                 setDice(mDice + 1);
             }
         });
+    }
+
+    @Override
+    protected Parcelable onSaveInstanceState() {
+        Parcelable state = super.onSaveInstanceState();
+        Bundle out = new Bundle(2);
+        out.putInt(DICE_KEY, mDice);
+        out.putParcelable(STATE_KEY, state);
+        return out;
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Parcelable state) {
+        if (state instanceof Bundle) {
+            Bundle bundle = (Bundle) state;
+            mDice = bundle.getInt(DICE_KEY);
+            mBigRedButton.setText(String.valueOf(mDice));
+            state = bundle.getParcelable(STATE_KEY);
+        }
+        super.onRestoreInstanceState(state);
     }
 
     public void setType(Util.TestType type) {

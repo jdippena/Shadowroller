@@ -15,6 +15,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.ViewGroup;
 
 import com.imber.shadowroller.R;
 import com.imber.shadowroller.Util;
@@ -26,10 +27,13 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
     private SectionsPagerAdapter mSectionsPagerAdapter;
     private ViewPager mViewPager;
 
-    private CommonRollsFragment mCommonRollFragment;
     private SimpleTestFragment mSimpleTestFragment;
     private ExtendedTestFragment mExtendedTestFragment;
     private ProbabilityFragment mProbabilityFragment;
+
+    private static final String SIMPLE_TEST_FRAG_KEY = "simple_test";
+    private static final String EXTENDED_TEST_FRAG_KEY = "extended_test";
+    private static final String PROBABILITY_FRAG_KEY = "probability";
 
     public DiceRollerView mDiceRollerView;
 
@@ -41,15 +45,6 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         setContentView(R.layout.activity_main);
         mDiceRollerView = (DiceRollerView) findViewById(R.id.dice_roller_view);
 
-        mCommonRollFragment = CommonRollsFragment.newInstance();
-        mSimpleTestFragment = SimpleTestFragment.newInstance();
-        mExtendedTestFragment = ExtendedTestFragment.newInstance();
-        mProbabilityFragment = ProbabilityFragment.newInstance();
-        mDiceRollerView.setSimpleTestDiceListener(mSimpleTestFragment);
-        mDiceRollerView.setExtendedTestDiceListener(mExtendedTestFragment);
-        mDiceRollerView.setProbabilityDiceListener(mProbabilityFragment);
-
-
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
@@ -58,6 +53,7 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         mViewPager.setAdapter(mSectionsPagerAdapter);
         mViewPager.setCurrentItem(1);
         mViewPager.addOnPageChangeListener(this);
+        mViewPager.setOffscreenPageLimit(3);
         onPageSelected(1);
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
@@ -68,7 +64,6 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
             new InitializeProbabilityTables().execute();
         }
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -88,6 +83,25 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        getSupportFragmentManager().putFragment(outState, SIMPLE_TEST_FRAG_KEY, mSimpleTestFragment);
+        getSupportFragmentManager().putFragment(outState, EXTENDED_TEST_FRAG_KEY, mExtendedTestFragment);
+        getSupportFragmentManager().putFragment(outState, PROBABILITY_FRAG_KEY, mProbabilityFragment);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        mSimpleTestFragment = (SimpleTestFragment)
+                getSupportFragmentManager().getFragment(savedInstanceState, SIMPLE_TEST_FRAG_KEY);
+        mExtendedTestFragment = (ExtendedTestFragment)
+                getSupportFragmentManager().getFragment(savedInstanceState, EXTENDED_TEST_FRAG_KEY);
+        mProbabilityFragment = (ProbabilityFragment)
+                getSupportFragmentManager().getFragment(savedInstanceState, PROBABILITY_FRAG_KEY);
     }
 
     @Override
@@ -120,6 +134,17 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
     @Override
     public void onPageScrollStateChanged(int state) {}
 
+    public void setSimpleTestDiceListener(Util.SimpleTestDiceListener simpleTestDiceListener) {
+        mDiceRollerView.setSimpleTestDiceListener(simpleTestDiceListener);
+    }
+
+    public void setExtendedTestDiceListener(Util.ExtendedTestDiceListener extendedTestDiceListener) {
+        mDiceRollerView.setExtendedTestDiceListener(extendedTestDiceListener);
+    }
+
+    public void setProbabilityDiceListener(Util.ProbabilityDiceListener probabilityDiceListener) {
+        mDiceRollerView.setProbabilityDiceListener(probabilityDiceListener);
+    }
 
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
@@ -131,12 +156,18 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         public Fragment getItem(int position) {
             switch (position) {
                 case 0:
-                    return mCommonRollFragment;
+                    return CommonRollsFragment.newInstance();
                 case 1:
+                    mSimpleTestFragment = SimpleTestFragment.newInstance();
+                    mDiceRollerView.setSimpleTestDiceListener(mSimpleTestFragment);
                     return mSimpleTestFragment;
                 case 2:
+                    mExtendedTestFragment = ExtendedTestFragment.newInstance();
+                    mDiceRollerView.setExtendedTestDiceListener(mExtendedTestFragment);
                     return mExtendedTestFragment;
                 case 3:
+                    mProbabilityFragment = ProbabilityFragment.newInstance();
+                    mDiceRollerView.setProbabilityDiceListener(mProbabilityFragment);
                     return mProbabilityFragment;
                 default:
                     return null;
@@ -162,6 +193,22 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
                 default:
                     return null;
             }
+        }
+
+        @Override
+        public Object instantiateItem(ViewGroup container, int position) {
+            switch (position) {
+                case 1:
+                    mDiceRollerView.setSimpleTestDiceListener(mSimpleTestFragment);
+                    break;
+                case 2:
+                    mDiceRollerView.setExtendedTestDiceListener(mExtendedTestFragment);
+                    break;
+                case 3:
+                    mDiceRollerView.setProbabilityDiceListener(mProbabilityFragment);
+                    break;
+            }
+            return super.instantiateItem(container, position);
         }
     }
 

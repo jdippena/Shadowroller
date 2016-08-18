@@ -43,6 +43,10 @@ public class CommonRollsFragment extends Fragment
     public static final String DICE_KEY = "dice";
     public static final String ID_KEY = "id";
 
+    private ArrayList<Integer> mSavedDiceResults;
+    private static final String SAVED_DICE_RESULTS_KEY = "saved_dice_results";
+    private boolean mRestoredFromState;
+
     public CommonRollsFragment() {}
 
     public static CommonRollsFragment newInstance() {
@@ -61,6 +65,14 @@ public class CommonRollsFragment extends Fragment
         recyclerView.setAdapter(swipeManager.createWrappedAdapter(mAdapter));
         swipeManager.attachRecyclerView(recyclerView);
 
+        if (savedInstanceState != null) {
+            mSavedDiceResults = savedInstanceState.getIntegerArrayList(SAVED_DICE_RESULTS_KEY);
+            mRestoredFromState = true;
+        } else {
+            mSavedDiceResults = new ArrayList<>();
+            mRestoredFromState = false;
+        }
+
         FloatingActionButton fab = (FloatingActionButton) rootView.findViewById(R.id.fab_common_rolls_add);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -68,7 +80,7 @@ public class CommonRollsFragment extends Fragment
                 revealAddDialog(null);
             }
         });
-        getLoaderManager().initLoader(LOADER_ID, null, this);
+        getLoaderManager().restartLoader(LOADER_ID, null, this);
         return rootView;
     }
 
@@ -78,6 +90,12 @@ public class CommonRollsFragment extends Fragment
         addDialog.setCallback(this);
         addDialog.setArguments(args);
         addDialog.show(fm, "addDialog");
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putIntegerArrayList(SAVED_DICE_RESULTS_KEY, mSavedDiceResults);
     }
 
     @Override
@@ -92,6 +110,7 @@ public class CommonRollsFragment extends Fragment
         } else {
             getContext().getContentResolver().insert(DbContract.CommonRollsTable.CONTENT_URI, values);
         }
+        mSavedDiceResults.add(-1);
         getLoaderManager().restartLoader(LOADER_ID, null, this);
     }
 
@@ -144,6 +163,9 @@ public class CommonRollsFragment extends Fragment
             Item item = mData.get(position);
             holder.nameTextView.setText(item.name);
             holder.diceTextView.setText(String.valueOf(item.dice));
+            holder.resultTextView.setText(mSavedDiceResults.get(position) == -1
+                    ? ""
+                    : String.valueOf(mSavedDiceResults.get(position)));
             holder.setId(item.id);
         }
 
@@ -156,9 +178,15 @@ public class CommonRollsFragment extends Fragment
             mCursor = cursor;
             if (!mViewEventHandled) {
                 mData.clear();
+                if (!mRestoredFromState) {
+                    mSavedDiceResults.clear();
+                }
                 if (mCursor != null) {
                     while (mCursor.moveToNext()) {
                         mData.add(new Item(cursor));
+                        if (!mRestoredFromState) {
+                            mSavedDiceResults.add(-1);
+                        }
                     }
                 }
                 notifyDataSetChanged();
@@ -169,6 +197,7 @@ public class CommonRollsFragment extends Fragment
         public void deleteItem(int position) {
             long id = mData.get(position).id;
             mData.remove(position);
+            mSavedDiceResults.remove(position);
             notifyItemRemoved(position);
             mViewEventHandled = true;
             new DeleteItemTask().execute(id);
@@ -256,6 +285,7 @@ public class CommonRollsFragment extends Fragment
                     int dice = Integer.valueOf(diceTextView.getText().toString());
                     ArrayList<int[]> output = Util.doSimpleRoll(mRandom, dice, Util.TestModifier.NONE);
                     int successes = Util.countSuccesses(output);
+                    mSavedDiceResults.set(getLayoutPosition(), successes);
                     resultTextView.setBackgroundResource(
                             Util.getResultCircleIdFromRollStatus(Util.getRollStatus(output.get(0))));
                     resultTextView.setText(String.valueOf(successes));
