@@ -92,6 +92,10 @@ public class Util {
         void onProbabilityQueried(Uri uri);
     }
 
+    public interface HistoryListener {
+        void notifyItemInserted();
+    }
+
     public static ArrayList<int[]> doSimpleRoll( Random random, int dice, TestModifier modifier) {
         ArrayList<int[]> result = new ArrayList<>();
         switch (modifier) {

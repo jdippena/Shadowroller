@@ -8,12 +8,12 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -23,10 +23,12 @@ import com.imber.shadowroller.R;
 import com.imber.shadowroller.Util;
 import com.imber.shadowroller.data.DbContract;
 
-public class HistoryFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
+public class HistoryFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, Util.HistoryListener {
 
     private static final int LOADER_ID = 0;
-    HistoryAdapter mAdapter;
+    private HistoryAdapter mAdapter;
+    private RecyclerView mRecyclerView;
+    private boolean mItemInserted = false;
 
     public static HistoryFragment newInstance() {
         return new HistoryFragment();
@@ -37,21 +39,15 @@ public class HistoryFragment extends Fragment implements LoaderManager.LoaderCal
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_history, container, true);
-        Toolbar toolbar = (Toolbar) rootView.findViewById(R.id.toolbar);
-        AppCompatActivity parentActivity = (AppCompatActivity) getActivity();
-        parentActivity.setSupportActionBar(toolbar);
-        ActionBar actionBar = parentActivity.getSupportActionBar();
-        if (actionBar != null) {
-            actionBar.setDisplayHomeAsUpEnabled(true);
-        }
-        RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.history_recyler_view);
+        View rootView = inflater.inflate(R.layout.fragment_history, container, false);
+        mRecyclerView = (RecyclerView) rootView.findViewById(R.id.history_recyler_view);
         mAdapter = new HistoryAdapter();
-        if (recyclerView != null) {
-            recyclerView.setAdapter(mAdapter);
-            recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        if (mRecyclerView != null) {
+            mRecyclerView.setAdapter(mAdapter);
+            mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         }
         getLoaderManager().initLoader(LOADER_ID, null, this);
+        setHasOptionsMenu(true);
         return rootView;
     }
 
@@ -62,13 +58,44 @@ public class HistoryFragment extends Fragment implements LoaderManager.LoaderCal
     }
 
     @Override
+    public void notifyItemInserted() {
+        mItemInserted = true;
+        getLoaderManager().restartLoader(LOADER_ID, null, this);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_history, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_clear_history:
+                clearHistory();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        return new CursorLoader(getContext(), DbContract.HistoryTable.CONTENT_URI, null, null, null, null);
+        String sort = DbContract.HistoryTable.DATE + " DESC ";
+        return new CursorLoader(getContext(), DbContract.HistoryTable.CONTENT_URI, null, null, null, sort);
     }
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         mAdapter.swapCursor(data);
+        if (mItemInserted) {
+            mAdapter.notifyItemInserted(0);
+            mRecyclerView.scrollToPosition(0);
+            mItemInserted = false;
+        } else {
+            mAdapter.notifyDataSetChanged();
+        }
     }
 
     @Override

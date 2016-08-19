@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <bool name="is_large">true</bool>
+
+    <item name="layout_dice_roller" type="layout">@layout/layout_dice_roller_default</item>
+</resources>

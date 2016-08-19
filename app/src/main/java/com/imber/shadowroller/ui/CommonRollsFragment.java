@@ -47,6 +47,8 @@ public class CommonRollsFragment extends Fragment
     private static final String SAVED_DICE_RESULTS_KEY = "saved_dice_results";
     private boolean mRestoredFromState;
 
+    private Util.HistoryListener mHistoryListener;
+
     public CommonRollsFragment() {}
 
     public static CommonRollsFragment newInstance() {
@@ -90,6 +92,10 @@ public class CommonRollsFragment extends Fragment
         addDialog.setCallback(this);
         addDialog.setArguments(args);
         addDialog.show(fm, "addDialog");
+    }
+
+    public void setHistoryListener(Util.HistoryListener historyListener) {
+        this.mHistoryListener = historyListener;
     }
 
     @Override
@@ -292,6 +298,9 @@ public class CommonRollsFragment extends Fragment
                     Util.insertIntoHistoryTable(getContext().getContentResolver(), dice, successes,
                             Util.resultToOutput(output), true, Util.TestType.SIMPLE_TEST,
                             Util.TestModifier.NONE, Util.getRollStatus(output.get(0)));
+                    if (getResources().getBoolean(R.bool.is_large)) {
+                        mHistoryListener.notifyItemInserted();
+                    }
                 }
             });
             resultTextView = (TextView) v.findViewById(R.id.result_text_view);

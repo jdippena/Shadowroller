@@ -32,6 +32,7 @@ public class DiceRollerView extends RelativeLayout {
     private Util.SimpleTestDiceListener mSimpleTestDiceListener;
     private Util.ExtendedTestDiceListener mExtendedTestDiceListener;
     private Util.ProbabilityDiceListener mProbabilityDiceListener;
+    private Util.HistoryListener mHistoryListener;
 
     private Random mRandom = new Random();
     private int mDice;
@@ -160,6 +161,10 @@ public class DiceRollerView extends RelativeLayout {
         mProbabilityDiceListener = listener;
     }
 
+    public void setHistoryListener(Util.HistoryListener historyListener) {
+        this.mHistoryListener = historyListener;
+    }
+
     private void setDice(int dice) {
         mDice = Util.getBoundedDiceNumber(getResources(), dice, mTestType);
         mBigRedButton.setText(String.valueOf(mDice));
@@ -180,10 +185,12 @@ public class DiceRollerView extends RelativeLayout {
         @Override
         public void onClick(View v) {
             ArrayList<int[]> result = new ArrayList<>();
+            Util.RollStatus rollStatus = Util.RollStatus.NORMAL;
             switch (mTestType) {
                 case SIMPLE_TEST:
                     result = Util.doSimpleRoll(mRandom, mDice, mModifierStatus);
                     mSimpleTestDiceListener.onRollPerformed(result, mModifierStatus);
+                    rollStatus = Util.getRollStatus(result.get(0));
                     break;
                 case EXTENDED_TEST:
                     result = Util.doExtendedRoll(mRandom, mDice);
@@ -197,7 +204,10 @@ public class DiceRollerView extends RelativeLayout {
             }
             Util.insertIntoHistoryTable(getContext().getContentResolver(),
                     mDice, Util.countSuccesses(result), Util.resultToOutput(result), false,
-                    mTestType, mModifierStatus, Util.getRollStatus(result.get(0)));
+                    mTestType, mModifierStatus, rollStatus);
+            if (mContext.getResources().getBoolean(R.bool.is_large)) {
+                mHistoryListener.notifyItemInserted();
+            }
         }
     }
 }

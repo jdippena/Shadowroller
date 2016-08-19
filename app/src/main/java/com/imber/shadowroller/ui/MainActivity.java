@@ -27,10 +27,13 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
     private SectionsPagerAdapter mSectionsPagerAdapter;
     private ViewPager mViewPager;
 
+    private CommonRollsFragment mCommonRollsFragment;
     private SimpleTestFragment mSimpleTestFragment;
     private ExtendedTestFragment mExtendedTestFragment;
     private ProbabilityFragment mProbabilityFragment;
+    private HistoryFragment mHistoryFragment;
 
+    private static final String COMMON_ROLLS_FRAG_KEY = "common_rolls";
     private static final String SIMPLE_TEST_FRAG_KEY = "simple_test";
     private static final String EXTENDED_TEST_FRAG_KEY = "extended_test";
     private static final String PROBABILITY_FRAG_KEY = "probability";
@@ -63,6 +66,14 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
                 .getBoolean(PROBABILITY_TABLES_INITIALIZED_KEY, false)) {
             new InitializeProbabilityTables().execute();
         }
+
+        if (getResources().getBoolean(R.bool.is_large)) {
+            mHistoryFragment = HistoryFragment.newInstance();
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.history_container, mHistoryFragment)
+                    .commit();
+            mDiceRollerView.setHistoryListener(mHistoryFragment);
+        }
     }
 
     @Override
@@ -88,6 +99,7 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
+        getSupportFragmentManager().putFragment(outState, COMMON_ROLLS_FRAG_KEY, mCommonRollsFragment);
         getSupportFragmentManager().putFragment(outState, SIMPLE_TEST_FRAG_KEY, mSimpleTestFragment);
         getSupportFragmentManager().putFragment(outState, EXTENDED_TEST_FRAG_KEY, mExtendedTestFragment);
         getSupportFragmentManager().putFragment(outState, PROBABILITY_FRAG_KEY, mProbabilityFragment);
@@ -96,6 +108,8 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
+        mCommonRollsFragment = (CommonRollsFragment)
+                getSupportFragmentManager().getFragment(savedInstanceState, COMMON_ROLLS_FRAG_KEY);
         mSimpleTestFragment = (SimpleTestFragment)
                 getSupportFragmentManager().getFragment(savedInstanceState, SIMPLE_TEST_FRAG_KEY);
         mExtendedTestFragment = (ExtendedTestFragment)
@@ -134,18 +148,6 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
     @Override
     public void onPageScrollStateChanged(int state) {}
 
-    public void setSimpleTestDiceListener(Util.SimpleTestDiceListener simpleTestDiceListener) {
-        mDiceRollerView.setSimpleTestDiceListener(simpleTestDiceListener);
-    }
-
-    public void setExtendedTestDiceListener(Util.ExtendedTestDiceListener extendedTestDiceListener) {
-        mDiceRollerView.setExtendedTestDiceListener(extendedTestDiceListener);
-    }
-
-    public void setProbabilityDiceListener(Util.ProbabilityDiceListener probabilityDiceListener) {
-        mDiceRollerView.setProbabilityDiceListener(probabilityDiceListener);
-    }
-
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
         public SectionsPagerAdapter(FragmentManager fm) {
@@ -156,7 +158,9 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         public Fragment getItem(int position) {
             switch (position) {
                 case 0:
-                    return CommonRollsFragment.newInstance();
+                    mCommonRollsFragment = CommonRollsFragment.newInstance();
+                    mCommonRollsFragment.setHistoryListener(mHistoryFragment);
+                    return mCommonRollsFragment;
                 case 1:
                     mSimpleTestFragment = SimpleTestFragment.newInstance();
                     mDiceRollerView.setSimpleTestDiceListener(mSimpleTestFragment);
@@ -198,6 +202,10 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         @Override
         public Object instantiateItem(ViewGroup container, int position) {
             switch (position) {
+                case 0:
+                    if (mCommonRollsFragment != null && getResources().getBoolean(R.bool.is_large)) {
+                        mCommonRollsFragment.setHistoryListener(mHistoryFragment);
+                    }
                 case 1:
                     mDiceRollerView.setSimpleTestDiceListener(mSimpleTestFragment);
                     break;

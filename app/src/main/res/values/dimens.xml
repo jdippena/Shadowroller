@@ -1,4 +1,7 @@
 <resources>
+    <item name="match_parent" type="dimen">-1</item>
+    <item name="wrap_content" type="dimen">-2</item>
+
     <!-- Default screen margins, per the Android Design guidelines. -->
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
@@ -6,16 +9,26 @@
 
     <dimen name="dice_roller_view_height">160dp</dimen>
     <dimen name="dice_roller_view_card_height">120dp</dimen>
+    <dimen name="dice_roller_view_width">@dimen/match_parent</dimen>
     <dimen name="dice_roller_view_big_red_button_size">80dp</dimen>
     <dimen name="dice_roller_view_plus_minus_button_size">50dp</dimen>
     <dimen name="dice_roller_view_modifier_controls_margin_top">16dp</dimen>
+    <dimen name="dice_roller_view_elevation">8dp</dimen>
 
     <dimen name="result_circle_size">120dp</dimen>
-    <dimen name="result_output_width">300dp</dimen>
+    <dimen name="result_output_padding">32dp</dimen>
 
     <dimen name="common_roll_list_item_circle_size">60dp</dimen>
 
     <dimen name="dialog_common_rolls_add_min_width">400dp</dimen>
     <dimen name="dialog_common_rolls_add_min_height">100dp</dimen>
     <dimen name="dialog_common_rolls_add_edit_text_name_width">200dp</dimen>
+
+    <dimen name="padding_bottom_test_simple">@dimen/dice_roller_view_height</dimen>
+    <dimen name="padding_bottom_test_extended">@dimen/dice_roller_view_card_height</dimen>
+    <dimen name="padding_bottom_probability">@dimen/dice_roller_view_height</dimen>
+
+    <dimen name="padding_end_test_simple">0dp</dimen>
+    <dimen name="padding_end_test_extended">0dp</dimen>
+    <dimen name="padding_end_probability">0dp</dimen>
 </resources>

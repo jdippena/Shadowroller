@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <bool name="is_large">false</bool>
+
     <integer name="default_dice_number">10</integer>
     <integer name="max_dice_number">100</integer>
     <integer name="max_probability_dice_number">50</integer>
+
+    <item name="layout_dice_roller" type="layout">@layout/layout_dice_roller_default</item>
 </resources>

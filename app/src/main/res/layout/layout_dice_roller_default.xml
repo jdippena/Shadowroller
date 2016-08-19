@@ -7,7 +7,7 @@
         android:layout_height="@dimen/dice_roller_view_card_height"
         android:id="@+id/dice_roll_card"
         android:background="@android:color/white"
-        android:elevation="8dp"
+        android:elevation="@dimen/dice_roller_view_elevation"
         android:orientation="horizontal"
         android:gravity="center"
         android:layout_alignParentBottom="true">
@@ -37,7 +37,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/radio_group_roll_modifiers"
-            android:elevation="8dp"
             android:orientation="vertical"
             android:layout_weight="1"
             android:layout_marginTop="@dimen/dice_roller_view_modifier_controls_margin_top">
