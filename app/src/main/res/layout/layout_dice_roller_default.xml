@@ -14,7 +14,7 @@
         <FrameLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="5">
+            android:layout_weight="1">
             <TextView
                 android:layout_width="@dimen/dice_roller_view_plus_minus_button_size"
                 android:layout_height="@dimen/dice_roller_view_plus_minus_button_size"
@@ -26,19 +26,28 @@
                 android:textSize="24sp"
                 android:textStyle="bold"/>
         </FrameLayout>
-        <CheckBox
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/edge_check_box"
-            android:text="@string/edge"
-            android:layout_weight="1"
-            android:layout_marginTop="@dimen/dice_roller_view_modifier_controls_margin_top"/>
+            android:orientation="vertical"
+            android:layout_marginTop="@dimen/dice_roller_view_modifier_controls_margin_top">
+            <CheckBox
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/edge_check_box"
+                android:text="@string/edge" />
+            <CheckBox
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/cumulative_check_box"
+                android:text="@string/cumulative"
+                android:checked="true"/>
+        </LinearLayout>
         <RadioGroup
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/radio_group_roll_modifiers"
             android:orientation="vertical"
-            android:layout_weight="1"
             android:layout_marginTop="@dimen/dice_roller_view_modifier_controls_margin_top">
             <RadioButton
                 android:layout_width="match_parent"
@@ -55,7 +64,7 @@
         <FrameLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="5">
+            android:layout_weight="1">
             <TextView
                 android:layout_width="@dimen/dice_roller_view_plus_minus_button_size"
                 android:layout_height="@dimen/dice_roller_view_plus_minus_button_size"

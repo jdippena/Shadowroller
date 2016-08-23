@@ -27,6 +27,7 @@ public class DiceRollerView extends RelativeLayout {
     private TextView mMinusButton;
     private TextView mPlusButton;
     private CheckBox mEdgeCheckbox;
+    private CheckBox mCumulativeCheckbox;
     private RadioGroup mModifiers;
 
     private Util.SimpleTestDiceListener mSimpleTestDiceListener;
@@ -66,6 +67,7 @@ public class DiceRollerView extends RelativeLayout {
         mMinusButton = (TextView) findViewById(R.id.minus_button);
         mPlusButton = (TextView) findViewById(R.id.plus_button);
         mEdgeCheckbox = (CheckBox) findViewById(R.id.edge_check_box);
+        mCumulativeCheckbox = (CheckBox) findViewById(R.id.cumulative_check_box);
         mModifiers = (RadioGroup) findViewById(R.id.radio_group_roll_modifiers);
         for (int i = 0; i < mModifiers.getChildCount(); i++) {
             mModifiers.getChildAt(i).setEnabled(false);
@@ -135,14 +137,17 @@ public class DiceRollerView extends RelativeLayout {
         switch (mTestType) {
             case SIMPLE_TEST:
                 mEdgeCheckbox.setVisibility(VISIBLE);
+                mCumulativeCheckbox.setVisibility(INVISIBLE);
                 mModifiers.setVisibility(VISIBLE);
                 break;
             case EXTENDED_TEST:
                 mEdgeCheckbox.setVisibility(INVISIBLE);
+                mCumulativeCheckbox.setVisibility(INVISIBLE);
                 mModifiers.setVisibility(INVISIBLE);
                 break;
             case PROBABILITY:
                 mEdgeCheckbox.setVisibility(VISIBLE);
+                mCumulativeCheckbox.setVisibility(VISIBLE);
                 mModifiers.setVisibility(VISIBLE);
                 setDice(mDice);
                 break;
@@ -197,9 +202,8 @@ public class DiceRollerView extends RelativeLayout {
                     mExtendedTestDiceListener.onExtendedRollPerformed(result);
                     break;
                 case PROBABILITY:
-                    // TODO: add non-cumulative toggle
                     mProbabilityDiceListener.onProbabilityQueried(
-                            Util.buildProbabilityUri(mModifierStatus, mDice, true));
+                            Util.buildProbabilityUri(mModifierStatus, mDice, mCumulativeCheckbox.isChecked()));
                     return;
             }
             Util.insertIntoHistoryTable(getContext().getContentResolver(),

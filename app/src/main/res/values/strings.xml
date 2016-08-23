@@ -25,7 +25,7 @@
     <string name="history">History</string>
     <string name="clear">Clear</string>
     <string name="clear_history">Clear History</string>
-    <string name="accuracy">Probability Accuracy</string>
+    <string name="cumulative">Cumulative</string>
 
     <string name="test_type_heading">Test Type</string>
     <string name="dice_heading">Dice</string>
@@ -36,7 +36,7 @@
     <string name="text_minus_button" translatable="false">–</string>
     <string name="text_plus_button" translatable="false">+</string>
 
-    <string name="fab_scroll_behavior">com.imber.shadowroller.ui.ScrollAwareFABBehavior</string>
+    <string name="fab_scroll_behavior" translatable="false">com.imber.shadowroller.ui.ScrollAwareFABBehavior</string>
 
     <string name="file_name_probability_normal" translatable="false">probability_normal.data</string>
     <string name="file_name_probability_rule_of_six" translatable="false">probability_rule_of_six.data</string>
@@ -45,5 +45,6 @@
     <string name="file_name_probability_rule_of_six_cumulative" translatable="false">probability_rule_of_six_cumulative.data</string>
     <string name="file_name_probability_push_the_limit_cumulative" translatable="false">probability_push_the_limit_cumulative.data</string>
 
+    <string name="pref_accuracy">Probability Accuracy</string>
     <string name="pref_accuracy_key" translatable="false">accuracy</string>
 </resources>
