@@ -1,7 +1,7 @@
 <resources>
-    <string name="app_name">Shadowroller</string>
+    <string name="app_name" translatable="false">Shadowroller</string>
     <string name="action_settings">Settings</string>
-    <string name="content_authority">com.imber.shadowroller.provider</string>
+    <string name="content_authority" translatable="false">com.imber.shadowroller.provider</string>
 
     <string name="name_test_simple">Simple Test</string>
     <string name="name_test_extended">Extended Test</string>
@@ -25,12 +25,13 @@
     <string name="history">History</string>
     <string name="clear">Clear</string>
     <string name="clear_history">Clear History</string>
+    <string name="accuracy">Probability Accuracy</string>
 
     <string name="test_type_heading">Test Type</string>
     <string name="dice_heading">Dice</string>
-    <string name="edge_heading">@string/edge</string>
+    <string name="edge_heading" translatable="false">@string/edge</string>
 
-    <string name="list_item_history_default_name">-</string>
+    <string name="list_item_history_default_name" translatable="false">-</string>
 
     <string name="text_minus_button" translatable="false">–</string>
     <string name="text_plus_button" translatable="false">+</string>
@@ -44,6 +45,5 @@
     <string name="file_name_probability_rule_of_six_cumulative" translatable="false">probability_rule_of_six_cumulative.data</string>
     <string name="file_name_probability_push_the_limit_cumulative" translatable="false">probability_push_the_limit_cumulative.data</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="pref_accuracy_key" translatable="false">accuracy</string>
 </resources>

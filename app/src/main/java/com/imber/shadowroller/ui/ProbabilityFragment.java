@@ -3,6 +3,7 @@ package com.imber.shadowroller.ui;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
@@ -33,8 +34,6 @@ public class ProbabilityFragment extends Fragment implements Util.ProbabilityDic
     private static final int LOADER_ID = 0;
     private String mUri = "";
     private static final String URI_KEY = "query_uri";
-
-    private int mAccuracy = 2;
 
     public ProbabilityFragment() {}
 
@@ -77,7 +76,7 @@ public class ProbabilityFragment extends Fragment implements Util.ProbabilityDic
         String columnName = DbContract.getColumnNameFromDiceNumber(DbContract.getDiceNumberFromUri(uri));
         String[] projection = new String[] {columnName};
         String selection = columnName + " >= ? ";
-        String[] selectionArgs = new String[] {String.valueOf(Math.pow(10, -(mAccuracy + 2))/2)};
+        String[] selectionArgs = new String[] {String.valueOf(Math.pow(10, -(getAccuracy() + 2))/2)};
         return new CursorLoader(getContext(), uri, projection, selection, selectionArgs, null);
     }
 
@@ -89,6 +88,13 @@ public class ProbabilityFragment extends Fragment implements Util.ProbabilityDic
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
         mAdapter.swapCursor(null);
+    }
+
+    private int getAccuracy() {
+        String defaultAccuracy = String.valueOf(getResources().getInteger(R.integer.default_accuracy));
+        String accuracy = PreferenceManager.getDefaultSharedPreferences(getContext())
+                .getString(getString(R.string.pref_accuracy_key), defaultAccuracy);
+        return Integer.parseInt(accuracy);
     }
 
     private class ProbabilityAdapter extends RecyclerView.Adapter<ProbabilityViewHolder> {
@@ -119,9 +125,8 @@ public class ProbabilityFragment extends Fragment implements Util.ProbabilityDic
             mCursor.moveToPosition(position - 1);
             double prob = mCursor.getDouble(0);
             holder.hitsLabel.setText(String.valueOf(position - 1));
-            // TODO: add accuracy as a setting toggle
             holder.probability.setText(String.format(
-                    Locale.getDefault(), "%." + String.valueOf(mAccuracy) + "f", prob * 100));
+                    Locale.getDefault(), "%." + String.valueOf(getAccuracy()) + "f", prob * 100));
             if (mProbabilityBarWidth == 0) {
                 LinearLayout parent = (LinearLayout) holder.probability.getParent();
                 mProbabilityBarWidth = (mRecyclerView.getWidth() -

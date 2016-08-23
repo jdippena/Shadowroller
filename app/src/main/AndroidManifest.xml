@@ -28,6 +28,15 @@
                 android:value="com.imber.shadowroller.ui.MainActivity" />
         </activity>
 
+        <activity android:name=".ui.SettingsActivity"
+            android:parentActivityName=".ui.MainActivity"
+            android:label="@string/action_settings"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.imber.shadowroller.ui.MainActivity" />
+        </activity>
+
         <provider
             android:name=".data.Provider"
             android:authorities="@string/content_authority"

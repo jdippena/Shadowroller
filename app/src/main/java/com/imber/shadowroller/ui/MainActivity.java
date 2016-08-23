@@ -90,6 +90,8 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
                 startActivity(historyIntent);
                 return true;
             case R.id.action_settings:
+                Intent settingsIntent = new Intent(this, SettingsActivity.class);
+                startActivity(settingsIntent);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
