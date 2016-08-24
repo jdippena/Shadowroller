@@ -19,7 +19,8 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".ui.HistoryActivity"
+        <activity
+            android:name=".ui.HistoryActivity"
             android:parentActivityName=".ui.MainActivity"
             android:label="@string/history"
             android:theme="@style/AppTheme.NoActionBar">
@@ -28,9 +29,20 @@
                 android:value="com.imber.shadowroller.ui.MainActivity" />
         </activity>
 
-        <activity android:name=".ui.SettingsActivity"
+        <activity
+            android:name=".ui.SettingsActivity"
             android:parentActivityName=".ui.MainActivity"
             android:label="@string/action_settings"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.imber.shadowroller.ui.MainActivity" />
+        </activity>
+
+        <activity
+            android:name=".sync.SignInActivity"
+            android:parentActivityName=".ui.MainActivity"
+            android:label="@string/sign_in"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

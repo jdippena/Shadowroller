@@ -7,4 +7,5 @@
     <color name="glitch">#FB8C00</color>
     <color name="critical_glitch">#D32F2F</color>
     <color name="gray">#CCCCCC</color>
+    <color name="default_background">#FAFAFA</color>
 </resources>

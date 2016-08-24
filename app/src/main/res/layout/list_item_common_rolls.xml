@@ -16,7 +16,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/name_text_view"
-            android:textAppearance="@android:style/TextAppearance.DeviceDefault.WindowTitle"
+            android:textAppearance="@style/TextAppearance.AppCompat.Title"
             tools:text="Initiative"/>
     </LinearLayout>
     <FrameLayout
