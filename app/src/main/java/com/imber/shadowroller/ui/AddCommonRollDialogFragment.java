@@ -22,7 +22,7 @@ import com.imber.shadowroller.Util;
 public class AddCommonRollDialogFragment extends DialogFragment {
     private String mName;
     private int mDice;
-    private long mId;
+    private String mFirebaseId;
     private TextInputEditText mNameEditText;
     private TextInputEditText mDiceEditText;
     private AddDialogCallbacks mListener;
@@ -44,12 +44,12 @@ public class AddCommonRollDialogFragment extends DialogFragment {
         if (args != null) {
             mName = args.getString(CommonRollsFragment.NAME_KEY);
             mDice = args.getInt(CommonRollsFragment.DICE_KEY);
-            mId = args.getLong(CommonRollsFragment.ID_KEY);
+            mFirebaseId = args.getString(CommonRollsFragment.FIREBASE_ID_KEY);
             titleId = R.string.title_common_roll_add_edit;
         } else {
             mName = "";
             mDice = getResources().getInteger(R.integer.default_dice_number);
-            mId = -1;
+            mFirebaseId = null;
             titleId = R.string.title_common_roll_add;
         }
 
@@ -138,7 +138,7 @@ public class AddCommonRollDialogFragment extends DialogFragment {
     }
 
     private void processDone() {
-        mListener.onPositiveClicked(mNameEditText.getText().toString(), mDice, mId);
+        mListener.onPositiveClicked(mNameEditText.getText().toString(), mDice, mFirebaseId);
     }
 
     private void setDice(int dice) {
@@ -151,7 +151,7 @@ public class AddCommonRollDialogFragment extends DialogFragment {
     }
 
     public interface AddDialogCallbacks {
-        void onPositiveClicked(String name, int dice, long id);
+        void onPositiveClicked(String name, int dice, String firebaseId);
         void onNegativeClicked();
     }
 }

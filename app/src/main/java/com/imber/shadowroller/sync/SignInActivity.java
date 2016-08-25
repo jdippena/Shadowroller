@@ -1,11 +1,12 @@
 package com.imber.shadowroller.sync;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -21,6 +22,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.imber.shadowroller.BuildConfig;
+import com.imber.shadowroller.ui.CommonRollsFragment;
 
 public class SignInActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener, FirebaseAuth.AuthStateListener {
     private static final String TAG = "SignInActivity";
@@ -65,19 +67,16 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
             if (result.isSuccess() && result.getSignInAccount() != null) {
                 GoogleSignInAccount account = result.getSignInAccount();
                 AuthCredential credential = GoogleAuthProvider.getCredential(account.getIdToken(), null);
-                Log.d(TAG, "onActivityResult: " + account.getIdToken());
                 mAuth.signInWithCredential(credential)
                         .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                             @Override
                             public void onComplete(@NonNull Task<AuthResult> task) {
                                 if (!task.isSuccessful()) {
-                                    Log.d(TAG, "onComplete: " + "Firebase auth wasn't successful");
                                     finishWithResult(false);
                                 }
                             }
                         });
             } else {
-                Log.d(TAG, "onActivityResult: " + "result failed or sign in account is null");
                 finishWithResult(false);
             }
         }
@@ -86,22 +85,19 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
         finishWithResult(false);
-        Log.d(TAG, "onConnectionFailed");
     }
 
     @Override
     public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
         FirebaseUser user = firebaseAuth.getCurrentUser();
-        if (user != null) {
-            finishWithResult(true);
-        } else {
-            Log.d(TAG, "onAuthStateChanged: " + "user is null");
-//            finishWithResult(false);
-        }
+        if (user != null) finishWithResult(true);
     }
 
     private void finishWithResult(boolean success) {
         setResult(success ? RESULT_OK : RESULT_CANCELED);
+        SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(this).edit();
+        editor.putBoolean(CommonRollsFragment.SIGN_IN_BAR_ACTED_ON_KEY, true);
+        editor.apply();
         finish();
     }
 }

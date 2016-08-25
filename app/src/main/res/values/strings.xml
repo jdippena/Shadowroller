@@ -37,6 +37,7 @@
     <string name="sign_in_purpose_text">Sign in to enable sync across devices.</string>
     <string name="sign_out_purpose_text">Sign out to disable sync across devices.</string>
     <string name="error_sign_in">Error signing in. Try again in Settings.</string>
+    <string name="error_common_rolls_sync">Error syncing common rolls.</string>
     <string name="signed_in_key" translatable="false">signed_in</string>
 
     <string name="list_item_history_default_name" translatable="false">-</string>

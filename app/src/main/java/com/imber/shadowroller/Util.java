@@ -2,10 +2,12 @@ package com.imber.shadowroller;
 
 import android.content.ContentResolver;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.support.annotation.DrawableRes;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.imber.shadowroller.data.DbContract;
 
 import java.util.ArrayList;
@@ -13,6 +15,7 @@ import java.util.Random;
 
 public class Util {
     private static final String TAG = "Util";
+    public static final String DEFAULT_UID = "default";
 
     public enum TestType {
         SIMPLE_TEST, EXTENDED_TEST, PROBABILITY;
@@ -314,5 +317,38 @@ public class Util {
         values.put(DbContract.HistoryTable.DATE, System.currentTimeMillis());
 
         resolver.insert(DbContract.HistoryTable.CONTENT_URI, values);
+    }
+
+    public static String getFirebaseUid() {
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+        return auth.getCurrentUser() != null ? auth.getCurrentUser().getUid() : DEFAULT_UID;
+    }
+
+    public static void insertIntoCommonRollsTable(Context context, String name, int dice) {
+        ContentValues values = new ContentValues(2);
+        values.put(DbContract.CommonRollsTable.NAME, name);
+        values.put(DbContract.CommonRollsTable.DICE, dice);
+
+        context.getContentResolver().insert(DbContract.CommonRollsTable.CONTENT_URI, values);
+    }
+
+    public static void updateCommonRollsTable(Context context, String firebaseId, String name, int dice, int hits, int rollStatus) {
+        ContentValues values = new ContentValues(2);
+        values.put(DbContract.CommonRollsTable.NAME, name);
+        values.put(DbContract.CommonRollsTable.DICE, dice);
+        values.put(DbContract.CommonRollsTable.HITS, hits);
+        values.put(DbContract.CommonRollsTable.ROLL_STATUS, rollStatus);
+        String selection = DbContract.CommonRollsTable.FIREBASE_ID + " = ?";
+        String[] selectionArgs = new String[] {firebaseId};
+
+        context.getContentResolver().update(DbContract.CommonRollsTable.CONTENT_URI, values, selection, selectionArgs);
+    }
+
+    public static void deleteFromCommonRollsTable(Context context, String firebaseId) {
+        context.getContentResolver().delete(
+                DbContract.CommonRollsTable.CONTENT_URI,
+                DbContract.CommonRollsTable.FIREBASE_ID + " = ?",
+                new String[] {firebaseId}
+        );
     }
 }

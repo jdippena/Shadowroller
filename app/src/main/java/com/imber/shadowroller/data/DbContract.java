@@ -58,13 +58,12 @@ public final class DbContract {
         public static final String CONTENT_ITEM_TYPE =
                 ContentResolver.CURSOR_ITEM_BASE_TYPE + "/vnd." + CONTENT_AUTHORITY + "." + TABLE_NAME;
 
-        public static final String _ID = "_id";
+        public static final String FIREBASE_USERS = "users";
+        public static final String FIREBASE_ID = "firebase_id";
         public static final String NAME ="name";
         public static final String DICE = "dice";
-
-        public static Uri buildUriFromId(long id) {
-            return ContentUris.withAppendedId(CONTENT_URI, id);
-        }
+        public static final String HITS = "hits";
+        public static final String ROLL_STATUS = "roll_status";
     }
 
     public static abstract class AbstractProbabilityTable {

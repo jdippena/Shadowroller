@@ -9,10 +9,16 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.imber.shadowroller.Util;
+import com.imber.shadowroller.ui.CommonRollsFragment;
+
 public class Provider extends ContentProvider {
     private static final String TAG = "Provider";
 
     private DbHelper mDbHelper;
+    private DatabaseReference mCommonRollsDb;
 
     private static final UriMatcher sUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
     private static final int HISTORY = 0;
@@ -52,6 +58,12 @@ public class Provider extends ContentProvider {
     @Override
     public boolean onCreate() {
         mDbHelper = new DbHelper(getContext());
+
+        String uid = Util.getFirebaseUid();
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        database.setPersistenceEnabled(true);
+        mCommonRollsDb = database.getReference(DbContract.CommonRollsTable.FIREBASE_USERS + "/" + uid + "/");
+        if (!uid.equals(Util.DEFAULT_UID)) mCommonRollsDb.keepSynced(true);
         return true;
     }
 
@@ -130,25 +142,6 @@ public class Provider extends ContentProvider {
         return cursor;
     }
 
-    @Override
-    public int update(@NonNull Uri uri, ContentValues values, String selection, String[] selectionArgs) {
-        int rowsUpdated;
-        SQLiteDatabase db = mDbHelper.getWritableDatabase();
-        switch (sUriMatcher.match(uri)) {
-            case COMMON_ROLLS_ITEM:
-                selection = DbContract.CommonRollsTable._ID + " = ?";
-                selectionArgs = new String[] {uri.getLastPathSegment()};
-                rowsUpdated = db.update(DbContract.CommonRollsTable.TABLE_NAME, values, selection, selectionArgs);
-                break;
-            default:
-                throw new UnsupportedOperationException("Unknown uri: " + uri.toString());
-        }
-        if (getContext() != null) {
-            getContext().getContentResolver().notifyChange(uri, null);
-        }
-        return rowsUpdated;
-    }
-
     @Nullable
     @Override
     public Uri insert(@NonNull Uri uri, ContentValues values) {
@@ -161,9 +154,12 @@ public class Provider extends ContentProvider {
                 retUri = DbContract.HistoryTable.buildUriFromId(id);
                 break;
             case COMMON_ROLLS:
-                id = db.insert(DbContract.CommonRollsTable.TABLE_NAME, null, values);
-                retUri = DbContract.CommonRollsTable.buildUriFromId(id);
-                break;
+                String key = mCommonRollsDb.push().getKey();
+                String name = values.getAsString(DbContract.CommonRollsTable.NAME);
+                int dice = values.getAsInteger(DbContract.CommonRollsTable.DICE);
+                CommonRollsFragment.Item newItem = new CommonRollsFragment.Item(key, name, dice);
+                mCommonRollsDb.child(key).setValue(newItem);
+                return null;
             case PROBABILITY_NORMAL:
                 id = db.insert(DbContract.NormalProbabilityTable.TABLE_NAME, null, values);
                 retUri = DbContract.NormalProbabilityTable.buildUriFromId(id);
@@ -198,6 +194,23 @@ public class Provider extends ContentProvider {
     }
 
     @Override
+    public int update(@NonNull Uri uri, ContentValues values, String selection, String[] selectionArgs) {
+        switch (sUriMatcher.match(uri)) {
+            case COMMON_ROLLS:
+                String key = selectionArgs[0];
+                String name = values.getAsString(DbContract.CommonRollsTable.NAME);
+                int dice = values.getAsInteger(DbContract.CommonRollsTable.DICE);
+                int hits = values.getAsInteger(DbContract.CommonRollsTable.HITS);
+                int rollStatusInt = values.getAsInteger(DbContract.CommonRollsTable.ROLL_STATUS);
+                CommonRollsFragment.Item newItem = new CommonRollsFragment.Item(key, name, dice, hits, rollStatusInt);
+                mCommonRollsDb.child(key).setValue(newItem);
+                return 1;
+            default:
+                throw new UnsupportedOperationException("Unknown uri: " + uri.toString());
+        }
+    }
+
+    @Override
     public int delete(@NonNull Uri uri, String selection, String[] selectionArgs) {
         SQLiteDatabase db = mDbHelper.getWritableDatabase();
         int numDeleted = 0;
@@ -207,8 +220,8 @@ public class Provider extends ContentProvider {
                 numDeleted = db.delete(DbContract.HistoryTable.TABLE_NAME, selection, selectionArgs);
                 break;
             case COMMON_ROLLS:
-                numDeleted = db.delete(DbContract.CommonRollsTable.TABLE_NAME, selection, selectionArgs);
-                break;
+                mCommonRollsDb.child(selectionArgs[0]).removeValue();
+                return 1;
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri.toString());
         }
@@ -223,8 +236,6 @@ public class Provider extends ContentProvider {
         switch (sUriMatcher.match(uri)) {
             case HISTORY:
                 return bulkInsertHelper(uri, values, DbContract.HistoryTable.TABLE_NAME);
-            case COMMON_ROLLS:
-                return bulkInsertHelper(uri, values, DbContract.CommonRollsTable.TABLE_NAME);
             case PROBABILITY_NORMAL:
                 return bulkInsertHelper(uri, values, DbContract.NormalProbabilityTable.TABLE_NAME);
             case PROBABILITY_RULE_OF_SIX:
