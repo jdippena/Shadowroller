@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -62,7 +61,7 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
 
-        if (!PreferenceManager.getDefaultSharedPreferences(this)
+        if (!getSharedPreferences(getString(R.string.file_name_initialize_prob_tables_shared_pref),  MODE_PRIVATE)
                 .getBoolean(PROBABILITY_TABLES_INITIALIZED_KEY, false)) {
             new InitializeProbabilityTables().execute();
         }
@@ -227,8 +226,8 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         protected Void doInBackground(Void... params) {
             Log.d(TAG, "initializeProbabilityTables: ");
             DbHelper.initializeProbabilityTables(getApplicationContext());
-            SharedPreferences.Editor editor =
-                    PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit();
+            SharedPreferences.Editor editor = getSharedPreferences(
+                    getString(R.string.file_name_initialize_prob_tables_shared_pref), MODE_PRIVATE).edit();
             editor.putBoolean(PROBABILITY_TABLES_INITIALIZED_KEY, true);
             editor.apply();
             return null;
