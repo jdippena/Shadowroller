@@ -370,11 +370,11 @@ public class CommonRollsFragment extends Fragment
     }
 
     public static class Item {
-        String firebaseId;
-        String name;
-        int dice;
-        int hits;
-        int rollStatusInt;
+        public String firebaseId;
+        public String name;
+        public int dice;
+        public int hits;
+        public int rollStatusInt;
 
         public Item() {
 
