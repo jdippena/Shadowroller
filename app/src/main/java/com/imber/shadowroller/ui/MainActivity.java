@@ -124,6 +124,8 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         if (position == 0) {
             int width = mDiceRollerView.getWidth();
             mDiceRollerView.setTranslationX((1 - positionOffset) * width);
+        } else {
+            mDiceRollerView.setTranslationX(0);
         }
     }
 

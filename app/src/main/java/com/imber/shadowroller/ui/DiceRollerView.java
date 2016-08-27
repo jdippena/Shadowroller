@@ -86,11 +86,9 @@ public class DiceRollerView extends RelativeLayout {
         mEdgeCheckbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                for (int i = 0; i < mModifiers.getChildCount(); i++) {
-                    mModifiers.getChildAt(i).setEnabled(isChecked);
-                }
+                setModifiersEnabled(isChecked);
                 if (isChecked) {
-                      setModifierStatus(mModifiers.getCheckedRadioButtonId());
+                    setModifierStatus(mModifiers.getCheckedRadioButtonId());
                 } else {
                     mModifierStatus = Util.TestModifier.NONE;
                 }
@@ -136,21 +134,27 @@ public class DiceRollerView extends RelativeLayout {
         mTestType = type;
         switch (mTestType) {
             case SIMPLE_TEST:
-                mEdgeCheckbox.setVisibility(VISIBLE);
-                mCumulativeCheckbox.setVisibility(INVISIBLE);
-                mModifiers.setVisibility(VISIBLE);
+                mEdgeCheckbox.setEnabled(true);
+                mCumulativeCheckbox.setEnabled(false);
+                setModifiersEnabled(true);
                 break;
             case EXTENDED_TEST:
-                mEdgeCheckbox.setVisibility(INVISIBLE);
-                mCumulativeCheckbox.setVisibility(INVISIBLE);
-                mModifiers.setVisibility(INVISIBLE);
+                mEdgeCheckbox.setEnabled(false);
+                mCumulativeCheckbox.setEnabled(false);
+                setModifiersEnabled(false);
                 break;
             case PROBABILITY:
-                mEdgeCheckbox.setVisibility(VISIBLE);
-                mCumulativeCheckbox.setVisibility(VISIBLE);
-                mModifiers.setVisibility(VISIBLE);
+                mEdgeCheckbox.setEnabled(true);
+                mCumulativeCheckbox.setEnabled(true);
+                setModifiersEnabled(true);
                 setDice(mDice);
                 break;
+        }
+    }
+
+    private void setModifiersEnabled(boolean enabled) {
+        for (int i = 0; i < mModifiers.getChildCount(); i++) {
+            mModifiers.getChildAt(i).setEnabled(enabled);
         }
     }
 
