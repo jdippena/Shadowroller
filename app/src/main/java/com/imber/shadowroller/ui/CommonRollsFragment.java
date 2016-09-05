@@ -1,10 +1,10 @@
 package com.imber.shadowroller.ui;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
@@ -81,9 +81,9 @@ public class CommonRollsFragment extends Fragment
                 startActivityForResult(signInIntent, SIGN_IN_ACTIVITY_CODE);
             }
         });
-        int visibility = PreferenceManager.getDefaultSharedPreferences(getContext())
-                .getBoolean(SIGN_IN_BAR_ACTED_ON_KEY, false) ? View.GONE : View.VISIBLE;
-        mSignInBar.setVisibility(visibility);
+        boolean signInActedOn = getContext().getSharedPreferences(getString(R.string.file_name_sign_in_bar_shared_pref), Context.MODE_PRIVATE)
+                .getBoolean(SIGN_IN_BAR_ACTED_ON_KEY, false);
+        mSignInBar.setVisibility(signInActedOn ? View.GONE : View.VISIBLE);
 
         mFab = (FloatingActionButton) rootView.findViewById(R.id.fab_common_rolls_add);
         mFab.setOnClickListener(new View.OnClickListener() {
@@ -92,9 +92,7 @@ public class CommonRollsFragment extends Fragment
                 revealAddDialog(null);
             }
         });
-        visibility = PreferenceManager.getDefaultSharedPreferences(getContext())
-                .getBoolean(SIGN_IN_BAR_ACTED_ON_KEY, false) ? View.VISIBLE : View.GONE;
-        mFab.setVisibility(visibility);
+        mFab.setVisibility(signInActedOn ? View.VISIBLE : View.GONE);
         return rootView;
     }
 
@@ -116,8 +114,9 @@ public class CommonRollsFragment extends Fragment
     private void updateUI(boolean signedIn) {
         mSignInBar.setVisibility(View.GONE);
         mFab.setVisibility(View.VISIBLE);
-        SharedPreferences.Editor editor = PreferenceManager
-                .getDefaultSharedPreferences(getContext()).edit();
+        SharedPreferences.Editor editor = getContext()
+                .getSharedPreferences(getString(R.string.file_name_sign_in_bar_shared_pref), Context.MODE_PRIVATE)
+                .edit();
         editor.putBoolean(SIGN_IN_BAR_ACTED_ON_KEY, true);
         editor.putBoolean(SIGNED_IN_KEY, signedIn);
         editor.apply();
