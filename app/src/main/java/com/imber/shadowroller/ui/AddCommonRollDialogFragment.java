@@ -20,9 +20,11 @@ import com.imber.shadowroller.R;
 import com.imber.shadowroller.Util;
 
 public class AddCommonRollDialogFragment extends DialogFragment {
+    private long mId;
+    private String mFirebaseId;
     private String mName;
     private int mDice;
-    private String mFirebaseId;
+    private int mPosition;
     private TextInputEditText mNameEditText;
     private TextInputEditText mDiceEditText;
     private AddDialogCallbacks mListener;
@@ -42,14 +44,17 @@ public class AddCommonRollDialogFragment extends DialogFragment {
         Bundle args = getArguments();
         int titleId;
         if (args != null) {
-            mName = args.getString(CommonRollsFragment.NAME_KEY);
-            mDice = args.getInt(CommonRollsFragment.DICE_KEY);
-            mFirebaseId = args.getString(CommonRollsFragment.FIREBASE_ID_KEY);
+            mId = args.getLong(CommonRollsAdapter.ID_KEY);
+            mFirebaseId = args.getString(CommonRollsAdapter.FIREBASE_ID_KEY);
+            mName = args.getString(CommonRollsAdapter.NAME_KEY);
+            mDice = args.getInt(CommonRollsAdapter.DICE_KEY);
+            mPosition = args.getInt(CommonRollsAdapter.POSITION_KEY);
             titleId = R.string.title_common_roll_add_edit;
         } else {
+            mId = CommonRollsAdapter.DEFAULT_ID_VALUE;
+            mFirebaseId = null;
             mName = "";
             mDice = getResources().getInteger(R.integer.default_dice_number);
-            mFirebaseId = null;
             titleId = R.string.title_common_roll_add;
         }
 
@@ -117,12 +122,7 @@ public class AddCommonRollDialogFragment extends DialogFragment {
                         processDone();
                     }
                 })
-                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        mListener.onNegativeClicked();
-                    }
-                });
+                .setNegativeButton(R.string.cancel, null);
         mNameEditText.requestFocus();
         AlertDialog dialog = builder.create();
         dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
@@ -138,7 +138,11 @@ public class AddCommonRollDialogFragment extends DialogFragment {
     }
 
     private void processDone() {
-        mListener.onPositiveClicked(mNameEditText.getText().toString(), mDice, mFirebaseId);
+        if (mId == CommonRollsAdapter.DEFAULT_ID_VALUE && mFirebaseId == null) {
+            mListener.onNewCommonRollCreated(mNameEditText.getText().toString(), mDice);
+        } else {
+            mListener.onCommonRollEdited(mId, mFirebaseId, mNameEditText.getText().toString(), mDice, mPosition);;
+        }
     }
 
     private void setDice(int dice) {
@@ -151,7 +155,7 @@ public class AddCommonRollDialogFragment extends DialogFragment {
     }
 
     public interface AddDialogCallbacks {
-        void onPositiveClicked(String name, int dice, String firebaseId);
-        void onNegativeClicked();
+        void onNewCommonRollCreated(String name, int dice);
+        void onCommonRollEdited(long id, String firebaseId, String name, int dice, int position);
     }
 }

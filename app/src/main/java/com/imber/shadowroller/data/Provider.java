@@ -12,7 +12,7 @@ import android.support.annotation.Nullable;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.imber.shadowroller.Util;
-import com.imber.shadowroller.ui.CommonRollsFragment;
+import com.imber.shadowroller.ui.CommonRollsAdapter;
 
 public class Provider extends ContentProvider {
     private static final String TAG = "Provider";
@@ -60,10 +60,12 @@ public class Provider extends ContentProvider {
         mDbHelper = new DbHelper(getContext());
 
         String uid = Util.getFirebaseUid();
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        database.setPersistenceEnabled(true);
-        mCommonRollsDb = database.getReference(DbContract.CommonRollsTable.FIREBASE_USERS + "/" + uid + "/");
-        if (!uid.equals(Util.DEFAULT_UID)) mCommonRollsDb.keepSynced(true);
+        if (uid != null) {
+            FirebaseDatabase database = FirebaseDatabase.getInstance();
+            database.setPersistenceEnabled(true);
+            mCommonRollsDb = database.getReference(DbContract.CommonRollsTable.FIREBASE_USERS + "/" + uid + "/");
+            mCommonRollsDb.keepSynced(true);
+        }
         return true;
     }
 
@@ -116,8 +118,13 @@ public class Provider extends ContentProvider {
                 cursor = db.query(DbContract.HistoryTable.TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);
                 break;
             case COMMON_ROLLS:
-                cursor = db.query(DbContract.CommonRollsTable.TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);
-                break;
+                if (Util.isLoggedIn()) {
+//                    throw new UnsupportedOperationException("Can't query Firebase database: " + uri.toString());
+                    cursor = null;
+                } else {
+                    cursor = db.query(DbContract.CommonRollsTable.TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);
+                    break;
+                }
             case PROBABILITY_NORMAL_WITH_DICE:
                 cursor = db.query(DbContract.NormalProbabilityTable.TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);
                 break;
@@ -154,12 +161,20 @@ public class Provider extends ContentProvider {
                 retUri = DbContract.HistoryTable.buildUriFromId(id);
                 break;
             case COMMON_ROLLS:
-                String key = mCommonRollsDb.push().getKey();
-                String name = values.getAsString(DbContract.CommonRollsTable.NAME);
-                int dice = values.getAsInteger(DbContract.CommonRollsTable.DICE);
-                CommonRollsFragment.Item newItem = new CommonRollsFragment.Item(key, name, dice);
-                mCommonRollsDb.child(key).setValue(newItem);
-                return null;
+                if (Util.isLoggedIn()) {
+                    String key = mCommonRollsDb.push().getKey();
+                    String name = values.getAsString(DbContract.CommonRollsTable.NAME);
+                    int dice = values.getAsInteger(DbContract.CommonRollsTable.DICE);
+                    int hits = values.getAsInteger(DbContract.CommonRollsTable.HITS);
+                    int rollStatus = values.getAsInteger(DbContract.CommonRollsTable.ROLL_STATUS);
+                    CommonRollsAdapter.Item newItem = new CommonRollsAdapter.Item(key, name, dice, hits, rollStatus);
+                    mCommonRollsDb.child(key).setValue(newItem);
+                    return null;
+                } else {
+                    id = db.insert(DbContract.CommonRollsTable.TABLE_NAME, null, values);
+                    retUri = DbContract.CommonRollsTable.buildUriFromId(id);
+                    break;
+                }
             case PROBABILITY_NORMAL:
                 id = db.insert(DbContract.NormalProbabilityTable.TABLE_NAME, null, values);
                 retUri = DbContract.NormalProbabilityTable.buildUriFromId(id);
@@ -195,19 +210,30 @@ public class Provider extends ContentProvider {
 
     @Override
     public int update(@NonNull Uri uri, ContentValues values, String selection, String[] selectionArgs) {
+        int rowsUpdated;
+        SQLiteDatabase db = mDbHelper.getWritableDatabase();
         switch (sUriMatcher.match(uri)) {
             case COMMON_ROLLS:
-                String key = selectionArgs[0];
-                String name = values.getAsString(DbContract.CommonRollsTable.NAME);
-                int dice = values.getAsInteger(DbContract.CommonRollsTable.DICE);
-                int hits = values.getAsInteger(DbContract.CommonRollsTable.HITS);
-                int rollStatusInt = values.getAsInteger(DbContract.CommonRollsTable.ROLL_STATUS);
-                CommonRollsFragment.Item newItem = new CommonRollsFragment.Item(key, name, dice, hits, rollStatusInt);
-                mCommonRollsDb.child(key).setValue(newItem);
-                return 1;
+                if (Util.isLoggedIn()) {
+                    String key = selectionArgs[0];
+                    String name = values.getAsString(DbContract.CommonRollsTable.NAME);
+                    int dice = values.getAsInteger(DbContract.CommonRollsTable.DICE);
+                    int hits = values.getAsInteger(DbContract.CommonRollsTable.HITS);
+                    int rollStatusInt = values.getAsInteger(DbContract.CommonRollsTable.ROLL_STATUS);
+                    CommonRollsAdapter.Item newItem = new CommonRollsAdapter.Item(key, name, dice, hits, rollStatusInt);
+                    mCommonRollsDb.child(key).setValue(newItem);
+                    rowsUpdated = 1;
+                } else {
+                    rowsUpdated = db.update(DbContract.CommonRollsTable.TABLE_NAME, values, selection, selectionArgs);
+                }
+                break;
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri.toString());
         }
+        if (getContext() != null) {
+            getContext().getContentResolver().notifyChange(uri, null);
+        }
+        return rowsUpdated;
     }
 
     @Override
@@ -220,8 +246,13 @@ public class Provider extends ContentProvider {
                 numDeleted = db.delete(DbContract.HistoryTable.TABLE_NAME, selection, selectionArgs);
                 break;
             case COMMON_ROLLS:
-                mCommonRollsDb.child(selectionArgs[0]).removeValue();
-                return 1;
+                if (Util.isLoggedIn()) {
+                    mCommonRollsDb.child(selectionArgs[0]).removeValue();
+                    numDeleted = 1;
+                } else {
+                    numDeleted = db.delete(DbContract.CommonRollsTable.TABLE_NAME, selection, selectionArgs);
+                }
+                break;
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri.toString());
         }

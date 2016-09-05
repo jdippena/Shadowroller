@@ -18,7 +18,7 @@ import java.util.ArrayList;
 public class DbHelper extends SQLiteOpenHelper {
     private static final String TAG = "DbHelper";
 
-    public static final int VERSION = 4;
+    public static final int VERSION = 7;
     public static final String NAME = "shadowroller.db";
     public static final int NUMBER_OF_DICE = 50;
 
@@ -33,6 +33,14 @@ public class DbHelper extends SQLiteOpenHelper {
             DbContract.HistoryTable.STATUS + " INTEGER NOT NULL, " +
             DbContract.HistoryTable.OUTPUT + " TEXT NOT NULL, " +
             DbContract.HistoryTable.DATE + " INTEGER NOT NULL );";
+
+    public static final String SQL_CREATE_COMMON_ROLLS = "CREATE TABLE " +
+            DbContract.CommonRollsTable.TABLE_NAME + "( " +
+            DbContract.CommonRollsTable._ID + " INTEGER PRIMARY KEY, " +
+            DbContract.CommonRollsTable.NAME + " TEXT NOT NULL, " +
+            DbContract.CommonRollsTable.DICE + " INTEGER NOT NULL, " +
+            DbContract.CommonRollsTable.HITS + " INTEGER NOT NULL, " +
+            DbContract.CommonRollsTable.ROLL_STATUS + " INTEGER NOT NULL );";
 
     public static final String SQL_CREATE_NORMAL_PROBABILITY = "CREATE TABLE " +
             DbContract.NormalProbabilityTable.TABLE_NAME + "( " +
@@ -71,6 +79,7 @@ public class DbHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(SQL_CREATE_HISTORY);
+        db.execSQL(SQL_CREATE_COMMON_ROLLS);
         db.execSQL(SQL_CREATE_NORMAL_PROBABILITY);
         db.execSQL(SQL_CREATE_RULE_OF_SIX_PROBABILITY);
         db.execSQL(SQL_CREATE_PUSH_THE_LIMIT_PROBABILITY);

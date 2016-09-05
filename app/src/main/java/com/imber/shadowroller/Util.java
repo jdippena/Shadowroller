@@ -9,13 +9,13 @@ import android.support.annotation.DrawableRes;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.imber.shadowroller.data.DbContract;
+import com.imber.shadowroller.ui.CommonRollsAdapter;
 
 import java.util.ArrayList;
 import java.util.Random;
 
 public class Util {
     private static final String TAG = "Util";
-    public static final String DEFAULT_UID = "default";
 
     public enum TestType {
         SIMPLE_TEST, EXTENDED_TEST, PROBABILITY;
@@ -321,34 +321,63 @@ public class Util {
 
     public static String getFirebaseUid() {
         FirebaseAuth auth = FirebaseAuth.getInstance();
-        return auth.getCurrentUser() != null ? auth.getCurrentUser().getUid() : DEFAULT_UID;
+        return auth.getCurrentUser() != null ? auth.getCurrentUser().getUid() : null;
     }
 
-    public static void insertIntoCommonRollsTable(Context context, String name, int dice) {
-        ContentValues values = new ContentValues(2);
+    public static boolean isLoggedIn() {
+        return FirebaseAuth.getInstance().getCurrentUser() != null;
+    }
+
+    public static void insertIntoCommonRollsTable(Context context, String name, int dice, CommonRollsAdapter commonRollsAdapter) {
+        int hitValue = CommonRollsAdapter.DEFAULT_HIT_VALUE;
+        int rollStatusInt = RollStatus.NORMAL.toInt();
+        ContentValues values = new ContentValues(4);
         values.put(DbContract.CommonRollsTable.NAME, name);
         values.put(DbContract.CommonRollsTable.DICE, dice);
-
-        context.getContentResolver().insert(DbContract.CommonRollsTable.CONTENT_URI, values);
+        values.put(DbContract.CommonRollsTable.HITS, hitValue);
+        values.put(DbContract.CommonRollsTable.ROLL_STATUS, rollStatusInt);
+        Uri uri = context.getContentResolver().insert(DbContract.CommonRollsTable.CONTENT_URI, values);
+        if (!isLoggedIn() && uri != null) {
+            long id = Long.parseLong(uri.getLastPathSegment());
+            commonRollsAdapter.addToUI(id, name, dice, hitValue, rollStatusInt);
+            commonRollsAdapter.mFragment.getLoaderManager().restartLoader(CommonRollsAdapter.LOADER_ID, null, commonRollsAdapter);
+        }
     }
 
-    public static void updateCommonRollsTable(Context context, String firebaseId, String name, int dice, int hits, int rollStatus) {
-        ContentValues values = new ContentValues(2);
+    public static void updateCommonRollsTable(Context context, long id, String firebaseId, String name, int dice, int hits, int rollStatus, CommonRollsAdapter commonRollsAdapter, int position) {
+        ContentValues values = new ContentValues(4);
         values.put(DbContract.CommonRollsTable.NAME, name);
         values.put(DbContract.CommonRollsTable.DICE, dice);
         values.put(DbContract.CommonRollsTable.HITS, hits);
         values.put(DbContract.CommonRollsTable.ROLL_STATUS, rollStatus);
-        String selection = DbContract.CommonRollsTable.FIREBASE_ID + " = ?";
-        String[] selectionArgs = new String[] {firebaseId};
+        String selection;
+        String[] selectionArgs;
+        if (firebaseId != null) {
+            selection = DbContract.CommonRollsTable.FIREBASE_ID + " = ?";
+            selectionArgs = new String[] {firebaseId};
+        } else {
+            selection = DbContract.CommonRollsTable._ID + " = ?";
+            selectionArgs = new String[] {String.valueOf(id)};
+        }
 
         context.getContentResolver().update(DbContract.CommonRollsTable.CONTENT_URI, values, selection, selectionArgs);
+        if (!isLoggedIn()) {
+            commonRollsAdapter.updateUI(position, name, dice, hits, rollStatus);
+            commonRollsAdapter.mFragment.getLoaderManager().restartLoader(CommonRollsAdapter.LOADER_ID, null, commonRollsAdapter);
+        }
     }
 
-    public static void deleteFromCommonRollsTable(Context context, String firebaseId) {
-        context.getContentResolver().delete(
-                DbContract.CommonRollsTable.CONTENT_URI,
-                DbContract.CommonRollsTable.FIREBASE_ID + " = ?",
-                new String[] {firebaseId}
-        );
+    public static void deleteFromCommonRollsTable(Context context, long id, String firebaseId) {
+        String selection;
+        String[] selectionArgs;
+        if (Util.isLoggedIn()) {
+            selection = DbContract.CommonRollsTable.FIREBASE_ID + " = ?";
+            selectionArgs = new String[] {firebaseId};
+        } else {
+            selection = DbContract.CommonRollsTable._ID + " = ?";
+            selectionArgs = new String[] {String.valueOf(id)};
+        }
+        context.getContentResolver()
+                .delete(DbContract.CommonRollsTable.CONTENT_URI, selection, selectionArgs);
     }
 }
