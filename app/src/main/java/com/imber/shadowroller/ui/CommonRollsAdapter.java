@@ -56,7 +56,9 @@ public class CommonRollsAdapter extends RecyclerView.Adapter<CommonRollsAdapter.
         mFragment = commonRollsFragment;
         setHasStableIds(true);
         mViewEventHandled = false;
-        mFragment.getLoaderManager().initLoader(LOADER_ID, null, this);
+        if (!Util.isLoggedIn()) {
+            mFragment.getLoaderManager().initLoader(LOADER_ID, null, this);
+        }
     }
 
     @Override
@@ -237,7 +239,9 @@ public class CommonRollsAdapter extends RecyclerView.Adapter<CommonRollsAdapter.
 
                 @Override
                 protected void onPostExecute(Void aVoid) {
-                    mFragment.getLoaderManager().restartLoader(LOADER_ID, null, CommonRollsAdapter.this);
+                    if (!Util.isLoggedIn()) {
+                        mFragment.getLoaderManager().restartLoader(LOADER_ID, null, CommonRollsAdapter.this);
+                    }
                 }
             }.execute(String.valueOf(id), firebaseId);
         }

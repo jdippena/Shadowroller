@@ -15,6 +15,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 
 import com.imber.shadowroller.R;
 import com.imber.shadowroller.Util;
@@ -40,6 +41,8 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
     public DiceRollerView mDiceRollerView;
 
     private static final String PROBABILITY_TABLES_INITIALIZED_KEY = "prob_initialized";
+    private static final String SELECTED_PAGE_KEY = "selected_page";
+    private int mSelectedPage = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,12 +54,23 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         setSupportActionBar(toolbar);
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
+        if (savedInstanceState != null) {
+            mSelectedPage = savedInstanceState.getInt(SELECTED_PAGE_KEY, 1);
+            if (mSelectedPage == 0) {
+                mDiceRollerView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                    @Override
+                    public void onGlobalLayout() {
+                        mDiceRollerView.setTranslationX(mDiceRollerView.getWidth());
+                    }
+                });
+            }
+        }
         mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
-        mViewPager.setCurrentItem(1);
+        mViewPager.setCurrentItem(mSelectedPage);
         mViewPager.addOnPageChangeListener(this);
         mViewPager.setOffscreenPageLimit(3);
-        onPageSelected(1);
+        onPageSelected(mSelectedPage);
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
@@ -104,6 +118,7 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         getSupportFragmentManager().putFragment(outState, SIMPLE_TEST_FRAG_KEY, mSimpleTestFragment);
         getSupportFragmentManager().putFragment(outState, EXTENDED_TEST_FRAG_KEY, mExtendedTestFragment);
         getSupportFragmentManager().putFragment(outState, PROBABILITY_FRAG_KEY, mProbabilityFragment);
+        outState.putInt(SELECTED_PAGE_KEY, mSelectedPage);
     }
 
     @Override
@@ -131,6 +146,7 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
 
     @Override
     public void onPageSelected(int position) {
+        mSelectedPage = position;
         Util.TestType type;
         switch (position) {
             case 1:
