@@ -135,8 +135,13 @@ public class ProbabilityFragment extends Fragment implements Util.ProbabilityDic
                         parent.getPaddingRight() -
                         parent.getPaddingLeft()) / 3;
             }
-            holder.probabilityBar.setPadding(0, 0,
-                    (int) (mProbabilityBarWidth * (1 - (float) prob)), 0);
+            if (Util.isRTL(getContext())) {
+                holder.probabilityBar.setPadding((int) (mProbabilityBarWidth * (1 - (float) prob)),
+                        0, 0, 0);
+            } else {
+                holder.probabilityBar.setPadding(0, 0,
+                        (int) (mProbabilityBarWidth * (1 - (float) prob)), 0);
+            }
         }
 
         @Override

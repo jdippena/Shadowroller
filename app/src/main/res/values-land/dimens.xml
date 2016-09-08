@@ -14,4 +14,7 @@
     <dimen name="padding_end_test_simple">@dimen/dice_roller_view_width</dimen>
     <dimen name="padding_end_test_extended">@dimen/dice_roller_view_width</dimen>
     <dimen name="padding_end_probability">@dimen/dice_roller_view_width</dimen>
+    <dimen name="padding_right_test_simple">@dimen/padding_end_test_simple</dimen>
+    <dimen name="padding_right_test_extended">@dimen/padding_end_test_extended</dimen>
+    <dimen name="padding_right_probability">@dimen/padding_end_probability</dimen>
 </resources>

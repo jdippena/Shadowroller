@@ -17,6 +17,7 @@
     <string name="title_common_roll_add_edit">Edit Roll</string>
     <string name="hint_common_roll_add_name">Test Name</string>
     <string name="hint_common_roll_add_dice">Dice</string>
+    <string name="re_roll">Re-roll</string>
     <string name="done">Done</string>
     <string name="cancel">Cancel</string>
     <string name="untitled">Untitled</string>

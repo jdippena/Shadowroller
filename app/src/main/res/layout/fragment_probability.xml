@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:paddingBottom="@dimen/padding_bottom_probability"
     android:paddingEnd="@dimen/padding_end_probability"
-    android:paddingRight="@dimen/padding_end_probability"
+    android:paddingRight="@dimen/padding_right_probability"
     tools:context=".ui.MainActivity">
 
     <android.support.v7.widget.RecyclerView

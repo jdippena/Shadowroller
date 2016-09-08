@@ -210,8 +210,9 @@ public class DiceRollerView extends RelativeLayout {
                             Util.buildProbabilityUri(mModifierStatus, mDice, mCumulativeCheckbox.isChecked()));
                     return;
             }
+            boolean rtl = Util.isRTL(mContext);
             Util.insertIntoHistoryTable(getContext().getContentResolver(),
-                    mDice, Util.countSuccesses(result), Util.resultToOutput(result), false,
+                    mDice, Util.countSuccesses(result), Util.resultToOutput(result, rtl), false,
                     mTestType, mModifierStatus, rollStatus);
             if (mContext.getResources().getBoolean(R.bool.is_large)) {
                 mHistoryListener.notifyItemInserted();

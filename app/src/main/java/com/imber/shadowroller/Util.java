@@ -3,15 +3,20 @@ package com.imber.shadowroller;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.net.Uri;
+import android.os.Build;
 import android.support.annotation.DrawableRes;
+import android.support.v4.text.TextUtilsCompat;
+import android.view.View;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.imber.shadowroller.data.DbContract;
 import com.imber.shadowroller.ui.CommonRollsAdapter;
 
 import java.util.ArrayList;
+import java.util.Locale;
 import java.util.Random;
 
 public class Util {
@@ -237,20 +242,35 @@ public class Util {
         }
     }
 
-    public static String resultToOutput(int[] diceResult) {
+    private static String resultToOutputRTL(int[] diceResult) {
+        String display = String.valueOf(diceResult[0]);
+        for (int i = 1; i < diceResult.length; i++) {
+            display = String.valueOf(diceResult[i]) + ", " + display;
+        }
+        return display;
+    }
+
+    public static String resultToOutput(int[] diceResult, boolean rtl) {
+        if (rtl) {
+            return resultToOutputRTL(diceResult);
+        }
         String display = "";
         for (int i = 0; i < diceResult.length - 1; i++) {
             display += String.valueOf(diceResult[i]) + ", ";
         }
-        display += String.valueOf(diceResult[diceResult.length - 1]) + "\n";
+        display += String.valueOf(diceResult[diceResult.length - 1]);
         return display;
     }
 
-    public static String resultToOutput(ArrayList<int[]> diceResult) {
+    public static String resultToOutput(ArrayList<int[]> diceResult, boolean rtl) {
         String display = "";
         int i = 1;
         for (int[] result : diceResult) {
-            display += String.valueOf(i) + ": " + resultToOutput(result);
+            if (rtl) {
+                display = "\n" + resultToOutput(result, true) + " :" + String.valueOf(i) + display;
+            } else {
+                display += String.valueOf(i) + ": " + resultToOutput(result, false) + "\n";
+            }
             i++;
         }
         return display;
@@ -379,5 +399,17 @@ public class Util {
         }
         context.getContentResolver()
                 .delete(DbContract.CommonRollsTable.CONTENT_URI, selection, selectionArgs);
+    }
+
+    // from http://stackoverflow.com/questions/18996183/identifyng-rtl-language-in-android
+    public static boolean isRTL(Context context) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            Configuration config = context.getResources().getConfiguration();
+            return config.getLayoutDirection() == View.LAYOUT_DIRECTION_RTL;
+        } else {
+            final int directionality = TextUtilsCompat.getLayoutDirectionFromLocale(Locale.getDefault());
+            return directionality == Character.DIRECTIONALITY_RIGHT_TO_LEFT ||
+                    directionality == Character.DIRECTIONALITY_RIGHT_TO_LEFT_ARABIC;
+        }
     }
 }

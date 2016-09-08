@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:paddingBottom="@dimen/padding_bottom_test_extended"
     android:paddingEnd="@dimen/padding_end_test_extended"
-    android:paddingRight="@dimen/padding_end_test_extended"
+    android:paddingRight="@dimen/padding_right_test_extended"
     android:orientation="vertical"
     android:gravity="center_horizontal"
     tools:context=".ui.MainActivity">

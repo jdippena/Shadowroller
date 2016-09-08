@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="padding_right_test_simple">0dp</dimen>
+    <dimen name="padding_right_test_extended">0dp</dimen>
+    <dimen name="padding_right_probability">0dp</dimen>
+</resources>

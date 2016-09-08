@@ -60,7 +60,9 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
                 mDiceRollerView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
                     @Override
                     public void onGlobalLayout() {
-                        mDiceRollerView.setTranslationX(mDiceRollerView.getWidth());
+                        int translation = Util.isRTL(getApplicationContext()) ?
+                                -mDiceRollerView.getWidth() : mDiceRollerView.getWidth();
+                        mDiceRollerView.setTranslationX(translation);
                     }
                 });
             }
@@ -138,7 +140,8 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
     public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
         if (position == 0) {
             int width = mDiceRollerView.getWidth();
-            mDiceRollerView.setTranslationX((1 - positionOffset) * width);
+            float offset = Util.isRTL(this) ? (positionOffset - 1) * width : (1 - positionOffset) * width;
+            mDiceRollerView.setTranslationX(offset);
         } else {
             mDiceRollerView.setTranslationX(0);
         }

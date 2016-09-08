@@ -98,7 +98,17 @@ public class CommonRollsAdapter extends RecyclerView.Adapter<CommonRollsAdapter.
     public SwipeResultAction onSwipeItem(ViewHolder holder, int position, int result) {
         switch (result) {
             case SwipeableItemConstants.RESULT_SWIPED_RIGHT:
-                return new SwipeRemoveAction(position);
+                if (!Util.isRTL(mContext)) {
+                    return new SwipeRemoveAction(position);
+                } else {
+                    return new SwipeResultActionDefault();
+                }
+            case SwipeableItemConstants.RESULT_SWIPED_LEFT:
+                if (Util.isRTL(mContext)) {
+                    return new SwipeRemoveAction(position);
+                } else {
+                    return new SwipeResultActionDefault();
+                }
             default:
                 return new SwipeResultActionDefault();
         }
@@ -106,7 +116,11 @@ public class CommonRollsAdapter extends RecyclerView.Adapter<CommonRollsAdapter.
 
     @Override
     public int onGetSwipeReactionType(ViewHolder holder, int position, int x, int y) {
-        return SwipeableItemConstants.REACTION_CAN_SWIPE_RIGHT;
+        if (Util.isRTL(mContext)) {
+            return SwipeableItemConstants.REACTION_CAN_SWIPE_LEFT;
+        } else {
+            return SwipeableItemConstants.REACTION_CAN_SWIPE_RIGHT;
+        }
     }
 
     @Override
@@ -277,11 +291,12 @@ public class CommonRollsAdapter extends RecyclerView.Adapter<CommonRollsAdapter.
                     ArrayList<int[]> output = Util.doSimpleRoll(mRandom, dice, Util.TestModifier.NONE);
                     int successes = Util.countSuccesses(output);
 
+                    boolean rtl = Util.isRTL(mContext);
                     Item item = mData.get(getAdapterPosition());
                     Util.updateCommonRollsTable(mContext, item.id, item.firebaseId, item.name, item.dice,
                             successes, Util.getRollStatus(output.get(0)).toInt(), CommonRollsAdapter.this, getAdapterPosition());
                     Util.insertIntoHistoryTable(mContext.getContentResolver(), dice, successes,
-                            Util.resultToOutput(output), true, Util.TestType.SIMPLE_TEST,
+                            Util.resultToOutput(output, rtl), true, Util.TestType.SIMPLE_TEST,
                             Util.TestModifier.NONE, Util.getRollStatus(output.get(0)));
                     if (mContext.getResources().getBoolean(R.bool.is_large)) {
                         mHistoryListener.notifyItemInserted();

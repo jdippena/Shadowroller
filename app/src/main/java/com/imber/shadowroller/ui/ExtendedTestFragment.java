@@ -65,8 +65,9 @@ public class ExtendedTestFragment extends Fragment implements Util.ExtendedTestD
         mDisplay.clear();
         mSuccessesList.clear();
         int totalSuccesses = 0;
+        boolean rtl = Util.isRTL(getContext());
         for (int[] result : output) {
-            mDisplay.add(Util.resultToOutput(result));
+            mDisplay.add(Util.resultToOutput(result, rtl));
             int successes = Util.countSuccesses(result);
             totalSuccesses += successes;
             mSuccessesList.add(String.valueOf(successes));

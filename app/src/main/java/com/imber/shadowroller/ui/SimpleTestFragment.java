@@ -62,9 +62,16 @@ public class SimpleTestFragment extends Fragment implements Util.SimpleTestDiceL
     public void onRollPerformed(ArrayList<int[]> output, Util.TestModifier modifier) {
         mSuccesses = String.valueOf(Util.countSuccesses(output));
         mRollStatusInt = Util.getRollStatus(output.get(0)).toInt();
-        mDisplay = Util.resultToOutput(output.get(0));
+        boolean rtl = Util.isRTL(getContext());
+        String reroll = getString(R.string.re_roll);
+        if (rtl) {
+            mDisplay = "\n" + Util.resultToOutput(output.get(0), true);
+        } else {
+            mDisplay = Util.resultToOutput(output.get(0), false) + "\n";
+        }
         for (int i = 1; i < output.size(); i++) {
-            mDisplay += "Re-roll: " + Util.resultToOutput(output.get(i));
+            String diceOutput = Util.resultToOutput(output.get(i), rtl);
+            mDisplay += rtl ? "\n" + diceOutput + " :" + reroll : reroll + ": " + diceOutput + "\n";
         }
         populate();
     }
