@@ -40,7 +40,7 @@ public class HistoryFragment extends Fragment implements LoaderManager.LoaderCal
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_history, container, false);
-        mRecyclerView = (RecyclerView) rootView.findViewById(R.id.history_recyler_view);
+        mRecyclerView = (RecyclerView) rootView.findViewById(R.id.history_recycler_view);
         mAdapter = new HistoryAdapter();
         if (mRecyclerView != null) {
             mRecyclerView.setAdapter(mAdapter);
@@ -135,7 +135,13 @@ public class HistoryFragment extends Fragment implements LoaderManager.LoaderCal
             long date = mCursor.getLong(mCursor.getColumnIndex(DbContract.HistoryTable.DATE));
 
             Resources res = getResources();
-            holder.star.setVisibility(commonRoll ? View.VISIBLE : View.INVISIBLE);
+            if (commonRoll) {
+                holder.star.setVisibility(View.VISIBLE);
+                holder.star.setContentDescription(getString(R.string.history_star_content_description_visible));
+            } else {
+                holder.star.setVisibility(View.INVISIBLE);
+                holder.star.setContentDescription(getString(R.string.history_star_content_description_invisible));
+            }
             holder.testType.setText(Util.getNameFromTestType(res, type));
             holder.dice.setText(String.valueOf(dice));
             holder.edge.setText(Util.getNameFromTestModifier(res, modifier));

@@ -10,6 +10,8 @@
     <string name="name_probability">Probability</string>
     <string name="name_saved_rolls">Saved Rolls</string>
 
+    <string name="simple">Simple</string>
+    <string name="extended">Extended</string>
     <string name="edge">Edge</string>
     <string name="modifier_rule_of_six">Rule of Six</string>
     <string name="modifier_push_the_limit">Push the Limit</string>
@@ -32,10 +34,14 @@
     <string name="not_now">Not Now</string>
     <string name="sign_in">Sign In</string>
     <string name="sign_out">Sign Out</string>
+    <string name="history_star_content_description_visible">Saved roll</string>
+    <string name="history_star_content_description_invisible">Not saved roll</string>
 
+    <string name="saved_roll_heading">Saved Roll</string>
     <string name="test_type_heading">Test Type</string>
     <string name="dice_heading">Dice</string>
-    <string name="edge_heading" translatable="false">@string/edge</string>
+    <string name="edge_heading">Edge Used</string>
+    <string name="hits_heading">Hits</string>
 
     <string name="sign_in_purpose_text">Sign in to enable sync across devices.</string>
     <string name="sign_out_purpose_text">Sign out to disable sync across devices.</string>

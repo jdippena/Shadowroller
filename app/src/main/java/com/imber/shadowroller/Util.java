@@ -220,8 +220,8 @@ public class Util {
 
     public static String getNameFromTestType(Resources res, TestType type) {
         switch (type) {
-            case SIMPLE_TEST: return res.getString(R.string.name_test_simple);
-            case EXTENDED_TEST: return res.getString(R.string.name_test_extended);
+            case SIMPLE_TEST: return res.getString(R.string.simple);
+            case EXTENDED_TEST: return res.getString(R.string.extended);
             default: return res.getString(R.string.list_item_history_default_name);
         }
     }
