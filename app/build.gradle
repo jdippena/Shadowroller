@@ -22,13 +22,19 @@ android {
             storeFile file(keystoreProperties['storeFile'])
             storePassword keystoreProperties['storePassword']
         }
+        udacitySubmitConfig {
+            keyAlias 'UdacityShadowroller'
+            keyPassword 'Udacity_Shadowrooler_Key'
+            storeFile file('../UdacityKeystore.jks')
+            storePassword 'Udacity_Shadowroller'
+        }
     }
     buildTypes {
         release {
             minifyEnabled true
             debuggable false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            signingConfig signingConfigs.config
+            signingConfig signingConfigs.udacitySubmitConfig
         }
     }
     buildTypes.each {
