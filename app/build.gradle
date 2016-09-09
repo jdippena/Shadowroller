@@ -1,9 +1,5 @@
 apply plugin: 'com.android.application'
 
-def keystorePropertiesFile = rootProject.file("keystore.properties")
-def keystoreProperties = new Properties()
-keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
-
 android {
     compileSdkVersion 24
     buildToolsVersion "24.0.1"
@@ -16,12 +12,6 @@ android {
         versionName "1.0"
     }
     signingConfigs {
-        config {
-            keyAlias keystoreProperties['keyAlias']
-            keyPassword keystoreProperties['keyPassword']
-            storeFile file(keystoreProperties['storeFile'])
-            storePassword keystoreProperties['storePassword']
-        }
         udacitySubmitConfig {
             keyAlias 'UdacityShadowroller'
             keyPassword 'Udacity_Shadowrooler_Key'
