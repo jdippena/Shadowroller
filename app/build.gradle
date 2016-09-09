@@ -1,5 +1,9 @@
 apply plugin: 'com.android.application'
 
+def keystorePropertiesFile = rootProject.file("keystore.properties")
+def keystoreProperties = new Properties()
+keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+
 android {
     compileSdkVersion 24
     buildToolsVersion "24.0.1"
@@ -11,10 +15,20 @@ android {
         versionCode 1
         versionName "1.0"
     }
+    signingConfigs {
+        config {
+            keyAlias keystoreProperties['keyAlias']
+            keyPassword keystoreProperties['keyPassword']
+            storeFile file(keystoreProperties['storeFile'])
+            storePassword keystoreProperties['storePassword']
+        }
+    }
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
+            debuggable false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.config
         }
     }
     buildTypes.each {
@@ -25,17 +39,14 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     testCompile 'junit:junit:4.12'
-
     compile('com.h6ah4i.android.widget.advrecyclerview:advrecyclerview:0.9.2@aar') {
         transitive = true
     }
     compile 'klogi.com:rtlviewpager:1.0.0'
-
     compile 'com.android.support:appcompat-v7:24.2.0'
     compile 'com.android.support:design:24.2.0'
     compile 'com.android.support:support-v4:24.2.0'
     compile 'com.android.support:gridlayout-v7:24.2.0'
-
     compile 'com.google.firebase:firebase-auth:9.4.0'
     compile 'com.google.android.gms:play-services-auth:9.4.0'
     compile 'com.google.firebase:firebase-database:9.4.0'
